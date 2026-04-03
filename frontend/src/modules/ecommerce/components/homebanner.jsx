@@ -10,9 +10,7 @@ function HomeBanner() {
 
   const images = [
     "/images/ecom/video1.mp4",
-    "/images/ecom/Banner2.png",
-    "/images/ecom/Banner.jpg",
-    "/images/ecom/Banner2.png",
+    "/images/ecom/Banner2.jpg",
     "/images/ecom/Banner.jpg",
   ];
 
