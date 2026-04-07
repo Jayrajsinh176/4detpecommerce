@@ -187,13 +187,7 @@ function Footer() {
                   Resources
                 </h4>
                 <nav className="flex flex-col space-y-3 text-sm sm:text-base">
-                  <Link
-                    to="/terms"
-                    className="relative flex items-center gap-2 hover:text-white cursor-pointer group/link"
-                  >
-                    <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
-                    <span>Terms & Conditions</span>
-                  </Link>
+                  
                   <Link
                     to="/mediaroom"
                     className="relative flex items-center gap-2 hover:text-white cursor-pointer group/link"

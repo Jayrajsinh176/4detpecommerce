@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 function AllProducts() {
   const [Products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("All");
   const [wishlist, setWishlist] = useState({});
   const navigate = useNavigate();
 
@@ -12,9 +14,18 @@ function AllProducts() {
     setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
 
   useEffect(() => {
-    api
-      .get("/products")
-      .then((res) => setProducts(res.data))
+    api.get("/products")
+      .then((res) => {
+        console.log("PRODUCTS SAMPLE:", res.data[0]); // 👈 check field names
+        setProducts(res.data);
+      })
+      .catch((err) => console.log(err));
+
+    api.get("/categories")
+      .then((res) => {
+        console.log("CATEGORIES SAMPLE:", res.data[0]); // 👈 check field names
+        setCategories(res.data);
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -31,6 +42,11 @@ function AllProducts() {
       .catch((err) => { console.error(err); alert("Error adding to cart"); });
   };
 
+  // Filter products by category_id — adjust field names after checking console
+  const filteredProducts = activeCategory === "All"
+    ? Products
+    : Products.filter((p) => p.category_id === activeCategory);
+
   return (
     <div className="min-h-screen bg-white px-3 sm:px-4 md:px-6 py-4">
       <div className="max-w-7xl mx-auto">
@@ -39,9 +55,37 @@ function AllProducts() {
             Products
           </h2>
 
+         
+          {/* Category Filter Buttons */}
+<div className="flex flex-wrap gap-2 mb-6">
+  <button
+    onClick={() => setActiveCategory("All")}
+    className={`px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full border transition-all duration-200
+      ${activeCategory === "All"
+        ? "bg-black text-white border-black shadow-md scale-105"
+        : "bg-gray-100 text-gray-600 border-gray-100 hover:bg-gray-200 hover:text-black"
+      }`}
+  >
+    All
+  </button>
+
+  {categories.map((cat) => (
+    <button
+      key={cat.id}
+      onClick={() => setActiveCategory(cat.id)}
+      className={`px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full border transition-all duration-200
+        ${activeCategory === cat.id
+          ? "bg-black text-white border-black shadow-md scale-105"
+          : "bg-gray-100 text-gray-600 border-gray-100 hover:bg-gray-200 hover:text-black"
+        }`}
+    >
+      {cat.name}
+    </button>
+  ))}
+</div>
           {/* 5 Column Responsive Grid */}
           <div className="px-0 sm:px-4 md:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
-            {Products.map((item, index) => {
+            {filteredProducts.map((item, index) => {
               const hasDiscount = item?.offer_price && item?.discount_percentage;
 
               return (
@@ -110,7 +154,7 @@ function AllProducts() {
                       sm:group-hover:opacity-100 sm:group-hover:translate-y-0
                       transition-all duration-300"
                     onClick={() => handleAddToBag(item)}
-                  >x
+                  >
                     Add to Bag
                   </button>
 
@@ -118,6 +162,7 @@ function AllProducts() {
               );
             })}
           </div>
+
         </div>
       </div>
     </div>

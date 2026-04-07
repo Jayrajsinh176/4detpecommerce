@@ -5,8 +5,8 @@ const stats = [
   {
     id: 1,
     value: 100,
-    display: "10K+",
-    label: "Products Available",
+    display: "75+",
+    label: "Quality Products ",
     icon: Package,
     gradient: "from-blue-600 to-blue-700",
     bg: "bg-amber-50",
@@ -24,8 +24,8 @@ const stats = [
   },
   {
     id: 3,
-    value: 100,
-    display: "50K+",
+    value: 80,
+    display: "5000+",
     label: "Orders Delivered",
     icon: TrendingUp,
     gradient: "from-blue-600 to-blue-700",
@@ -61,11 +61,12 @@ function StatCard({ stat, isVisible, idx }) {
       if (!start) start = timestamp;
       const elapsed = timestamp - start;
       const duration = 2000;
-      
+
       const ratio = Math.min(elapsed / duration, 1);
       const ease = 1 - Math.pow(1 - ratio, 3);
-      
-      setProgress(ease * stat.value);
+
+      // progress bar capped at 100, but animates up to stat.value
+      setProgress(ease * Math.min(stat.value, 100));
 
       if (ratio < 1) {
         frame = requestAnimationFrame(animate);
@@ -76,24 +77,13 @@ function StatCard({ stat, isVisible, idx }) {
     return () => frame && cancelAnimationFrame(frame);
   }, [isVisible, stat.value]);
 
-  // format display number based on progress
-  const formatNumber = () => {
-    const val = Math.round(progress);
-    if (stat.display.includes('%')) return `${val}%`;
-    if (stat.display.includes('K')) {
-      const base = parseInt(stat.display);
-      return `${Math.round((val / 100) * base)}K+`;
-    }
-    return `${val}+`;
-  };
-
   return (
-    <div 
+    <div
       className={`card ${isVisible ? 'visible' : ''}`}
       style={{ transitionDelay: `${idx * 100}ms` }}
     >
       <div className="card-glow" />
-      
+
       <div className="card-content">
         <div className="card-header">
           <div className={`icon-wrap ${stat.bg}`}>
@@ -102,20 +92,25 @@ function StatCard({ stat, isVisible, idx }) {
         </div>
 
         <div className="stats-display">
-          <h3 className="stat-number">{formatNumber()}</h3>
+          {/* Always show exactly what's written in display */}
+          <h3 className="stat-number">{stat.display}</h3>
           <p className="stat-label">{stat.label}</p>
         </div>
 
         <div className="progress-container">
-          <div className={`progress-bar bg-gradient-to-r ${stat.gradient}`} 
-               style={{ width: `${progress}%` }}>
+          {/* Bar width capped at 100% regardless of value */}
+          <div
+            className={`progress-bar bg-gradient-to-r ${stat.gradient}`}
+            style={{ width: `${progress}%` }}
+          >
             <div className="progress-shine" />
           </div>
         </div>
 
         <div className="progress-info">
           <span>Progress</span>
-          <span>{Math.round(progress)}%</span>
+          {/* Show actual value in progress info, capped display at 100% */}
+          <span>{Math.min(Math.round(progress), 100)}%</span>
         </div>
       </div>
     </div>

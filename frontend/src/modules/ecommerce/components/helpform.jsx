@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { LiaInfoCircleSolid } from "react-icons/lia";
+import axios from "axios";
 
 function Helpform() {
 
@@ -16,11 +17,25 @@ function Helpform() {
   });
 
   const [formErrors, setFormErrors] = useState({});
+  const [tickets, setTickets] = useState([]);
 
   const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
+  // 🔥 AUTO FILL USER DATA
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        mobile_no: user.mobile_no || '',
+        email: user.email || ''
+      }));
+    }
+
+    fetchTickets();
   }, []);
 
   const handleChange = (e) => {
@@ -55,20 +70,11 @@ function Helpform() {
     fileInputRef.current?.click();
   };
 
-  const handleSubmit = (e) => {
+  // 🔥 SUBMIT
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     let errors = {};
-
-    if (!formData.mobile.trim()) {
-      errors.mobile = "Mobile number is required";
-    }
-
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Invalid email address";
-    }
 
     if (!formData.category || formData.category === "Select Category") {
       errors.category = "Please select a category";
@@ -87,10 +93,62 @@ function Helpform() {
       return;
     }
 
-    setFormErrors({});
-    alert("We have received your query. We will contact you soon.");
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
 
-    window.location.reload();
+      const form = new FormData();
+
+      form.append("member_id", user.id); // ✅ MAIN
+      form.append("category", formData.category);
+      form.append("subject", formData.subject);
+      form.append("details", formData.details);
+
+      if (fileInputRef.current.files[0]) {
+        form.append("image", fileInputRef.current.files[0]);
+      }
+
+      await axios.post("http://127.0.0.1:8000/api/help-ticket", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      alert("We have received your query. We will contact you soon.");
+
+      setFormData(prev => ({
+        ...prev,
+        category: '',
+        subject: '',
+        details: ''
+      }));
+
+      setImagePreview(null);
+
+      fetchTickets();
+
+    } catch (error) {
+      console.log("FULL ERROR:", error);
+      console.log("RESPONSE:", error?.response);
+      console.log("DATA:", error?.response?.data);
+
+      alert(error?.response?.data?.message || "Something went wrong!");
+    }
+
+  };
+
+  // 🔥 FETCH TICKETS
+  const fetchTickets = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+
+      const res = await axios.get(
+        `http://127.0.0.1:8000/api/help-ticket/${user.id}`
+      );
+
+      setTickets(res.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -110,6 +168,7 @@ function Helpform() {
 
         <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
 
+          {/* ✅ AUTO-FILLED + DISABLED */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-xs sm:text-sm font-medium mb-1">
@@ -118,13 +177,10 @@ function Helpform() {
               <input
                 type="text"
                 name="mobile"
-                maxLength="10"
-                placeholder='+91 9913198655'
-                pattern="[0-9]{10}"
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 text-sm"
+                value={formData.mobile_no}
+                readOnly
+                className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100"
               />
-              {formErrors.mobile && <p className="text-red-500 text-xs">{formErrors.mobile}</p>}
             </div>
 
             <div>
@@ -134,11 +190,10 @@ function Helpform() {
               <input
                 type="email"
                 name="email"
-                placeholder='example@gmail.com'
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2 text-sm"
+                value={formData.email}
+                readOnly
+                className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100"
               />
-              {formErrors.email && <p className="text-red-500 text-xs">{formErrors.email}</p>}
             </div>
           </div>
 
@@ -149,6 +204,7 @@ function Helpform() {
             <select
               name="category"
               onChange={handleChange}
+              value={formData.category}
               className="w-full border rounded-md px-3 py-2 text-sm"
             >
               <option>Select Category</option>
@@ -159,7 +215,6 @@ function Helpform() {
             {formErrors.category && <p className="text-red-500 text-xs">{formErrors.category}</p>}
           </div>
 
-
           <div>
             <label className="block text-xs sm:text-sm font-medium mb-1">
               Subject<span className="text-red-500">*</span>
@@ -168,11 +223,11 @@ function Helpform() {
               type="text"
               name="subject"
               onChange={handleChange}
+              value={formData.subject}
               className="w-full border rounded-md px-3 py-2 text-sm"
             />
             {formErrors.subject && <p className="text-red-500 text-xs">{formErrors.subject}</p>}
           </div>
-
 
           <div>
             <label className="block text-xs sm:text-sm font-medium mb-1">
@@ -182,6 +237,7 @@ function Helpform() {
               rows="4"
               name="details"
               onChange={handleChange}
+              value={formData.details}
               className="w-full border rounded-md px-3 py-2 resize-none text-sm"
             />
             {formErrors.details && <p className="text-red-500 text-xs">{formErrors.details}</p>}
@@ -237,6 +293,61 @@ function Helpform() {
           </button>
 
         </form>
+
+        {/* ✅ USER TICKETS */}
+        <div className="mt-10">
+          <h2 className="text-lg font-semibold mb-4">Support Chat</h2>
+
+          {tickets.length === 0 && (
+            <p className="text-gray-500">No tickets yet.</p>
+          )}
+
+          {tickets.map((t) => (
+            <div key={t.id} className="mb-6 border rounded-lg p-4 shadow-sm">
+
+              {/* SUBJECT + STATUS */}
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-semibold text-sm">{t.subject}</h3>
+                <span className={`text-xs px-2 py-1 rounded ${t.status === "pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"
+                  }`}>
+                  {t.status}
+                </span>
+              </div>
+<div className="flex justify-start mb-2">
+                <div className="bg-gray-200 text-sm px-3 py-2 rounded-lg max-w-xs">
+                  {t.category}
+                </div>
+              </div>
+              <div className="flex justify-start mb-2">
+                <div className="bg-gray-200 text-sm px-3 py-2 rounded-lg max-w-xs">
+                  {t.subject}
+                </div>
+              </div>
+              {/* USER MESSAGE */}
+              <div className="flex justify-start mb-2">
+                <div className="bg-gray-200 text-sm px-3 py-2 rounded-lg max-w-xs">
+                  {t.details}
+                </div>
+              </div>
+
+              {/* ADMIN REPLY */}
+              {t.admin_reply && (
+                <div className="flex justify-end mt-2">
+                  <div className="bg-green-200 text-sm px-3 py-2 rounded-lg max-w-xs">
+                    {t.admin_reply}
+                  </div>
+                </div>
+              )}
+
+              {/* NO REPLY */}
+              {!t.admin_reply && (
+                <p className="text-xs text-gray-400 mt-2">Waiting for admin reply...</p>
+              )}
+
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );

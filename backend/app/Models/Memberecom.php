@@ -24,4 +24,8 @@ class Memberecom extends Model
     'city',
     'password'
 ];
+public function helpTickets()
+{
+    return $this->hasMany(\App\Models\HelpTicket::class);
+}
 }

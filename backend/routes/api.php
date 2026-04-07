@@ -25,7 +25,10 @@ use App\Http\Controllers\api\MemberControllerecom;
 use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\HelpTicketController;
 
+Route::post('/help-ticket', [HelpTicketController::class, 'store']);
+Route::get('/help-ticket/{member_id}', [HelpTicketController::class, 'getTickets']);
 // API routes for  ecommerce member operations (stateless, no CSRF)
 Route::post('/add-to-cart', [CartController::class, 'addToCart']);
 Route::get('/cart/{member_id}', [CartController::class, 'getCart']);

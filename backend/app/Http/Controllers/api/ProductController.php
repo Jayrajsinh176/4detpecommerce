@@ -34,22 +34,23 @@ class ProductController extends Controller
 
     // ✅ ALL PRODUCTS
     public function allProducts()
-    {
-        $products = Product::select(
-            'id',
-            'brand',
-            'name',
-            'price',
-            'offer_price',
-            'discount_percentage',
-            'description',
-            'image'
-        )->get();
+{
+    $products = Product::select(
+        'id',
+        'category_id', // 👈 add this
+        'brand',
+        'name',
+        'price',
+        'offer_price',
+        'discount_percentage',
+        'description',
+        'image'
+    )->get();
 
-        $products->transform(fn ($item) => $this->formatProduct($item));
+    $products->transform(fn ($item) => $this->formatProduct($item));
 
-        return response()->json($products);
-    }
+    return response()->json($products);
+}
 
     // ✅ VIRAL PRODUCTS
     public function viralProducts()
