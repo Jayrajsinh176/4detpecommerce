@@ -1,10 +1,10 @@
 import React from "react";
-import { FaInstagram, FaFacebookF, FaTwitter, FaChevronRight } from "react-icons/fa";
+import { FaInstagram, FaFacebookF, FaTwitter, FaYoutube, FaLinkedinIn } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
-import { FaMapMarkerAlt, FaEnvelope, FaPhone } from "react-icons/fa";
+import { FaMapMarkerAlt, FaEnvelope, FaPhone, FaChevronRight } from "react-icons/fa";
 
 function Footer() {
   const [categories, setCategories] = useState([]);
@@ -26,7 +26,7 @@ function Footer() {
         <div
           className="w-full h-full bg-center bg-no-repeat bg-cover"
           style={{
-            backgroundImage: `url('./images/ecom/mapfooter.png')`,
+            backgroundImage: `url('./images/mapfooter.png')`,
             filter: 'blur(2px)'
           }}
         />
@@ -46,7 +46,7 @@ function Footer() {
             <Link to="/home" className="inline-block group">
               <div className="relative">
                 <img
-                  src="./images/ecom/4steplogo.png"
+                  src="./images/4steplogo.png"
                   alt="4step"
                   className="relative h-12 sm:h-14 mb-5 group-hover:scale-110"
                 />
@@ -57,31 +57,66 @@ function Footer() {
               daily life.
             </p>
 
+
             {/* Social Icons */}
             <div className="flex gap-4">
+              {/* Instagram */}
               <a
-                href="#"
+                href="https://www.instagram.com/fourstepretail?igsh=cW54OGMxOHpucWI3"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="relative w-10 h-10 flex items-center justify-center rounded-full bg-linear-to-br from-gray-800 to-gray-900 text-white overflow-hidden group"
                 aria-label="Instagram"
               >
                 <div className="absolute inset-0 bg-linear-to-br from-[#E4405F] to-[#C13584] opacity-0 group-hover:opacity-100"></div>
                 <FaInstagram className="relative text-lg group-hover:scale-125" />
               </a>
+
+              {/* Facebook */}
               <a
-                href="#"
+                href="https://www.facebook.com/4stepnetwork"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="relative w-10 h-10 flex items-center justify-center rounded-full bg-linear-to-br from-gray-800 to-gray-900 text-white overflow-hidden group"
                 aria-label="Facebook"
               >
                 <div className="absolute inset-0 bg-linear-to-br from-[#1877F2] to-[#0d5dbf] opacity-0 group-hover:opacity-100"></div>
                 <FaFacebookF className="relative text-lg group-hover:scale-125" />
               </a>
+
+              {/* Twitter */}
               <a
-                href="#"
+                href="https://twitter.com/4stepnetwork"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="relative w-10 h-10 flex items-center justify-center rounded-full bg-linear-to-br from-gray-800 to-gray-900 text-white overflow-hidden group"
                 aria-label="Twitter"
               >
                 <div className="absolute inset-0 bg-linear-to-br from-[#1DA1F2] to-[#0d8bd9] opacity-0 group-hover:opacity-100"></div>
                 <FaTwitter className="relative text-lg group-hover:scale-125" />
+              </a>
+              {/* YouTube */}
+              <a
+                href="https://www.youtube.com/@4stepnetwork"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative w-10 h-10 flex items-center justify-center rounded-full bg-linear-to-br from-gray-800 to-gray-900 text-white overflow-hidden group"
+                aria-label="YouTube"
+              >
+                <div className="absolute inset-0 bg-linear-to-br from-[#FF0000] to-[#cc0000] opacity-0 group-hover:opacity-100"></div>
+                <FaYoutube className="relative text-lg group-hover:scale-125" />
+              </a>
+
+              {/* LinkedIn */}
+              <a
+                href="https://www.linkedin.com/in/4step-network"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative w-10 h-10 flex items-center justify-center rounded-full bg-linear-to-br from-gray-800 to-gray-900 text-white overflow-hidden group"
+                aria-label="LinkedIn"
+              >
+                <div className="absolute inset-0 bg-linear-to-br from-[#0A66C2] to-[#004182] opacity-0 group-hover:opacity-100"></div>
+                <FaLinkedinIn className="relative text-lg group-hover:scale-125" />
               </a>
             </div>
           </div>
@@ -110,12 +145,19 @@ function Footer() {
                     <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
                     <span>Products</span>
                   </Link>
-                  <Link
-                    to="/helpform"
+                   <Link
+                    to="/gallery"
                     className="relative flex items-center gap-2 hover:text-white group/link"
                   >
                     <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
-                    <span>Contact</span>
+                    <span>Gallery</span>
+                  </Link>
+                  <Link
+                    to="/aboutus"
+                    className="relative flex items-center gap-2 hover:text-white group/link"
+                  >
+                    <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
+                    <span>About Us</span>
                   </Link>
                 </nav>
               </div>
@@ -142,7 +184,7 @@ function Footer() {
               {/* Customer Policies */}
               <div className="group">
                 <h4 className="text-white font-bold mb-5 text-sm sm:text-base tracking-wide">
-                  Customer Policies
+                  Resources
                 </h4>
                 <nav className="flex flex-col space-y-3 text-sm sm:text-base">
                   <Link
@@ -151,6 +193,13 @@ function Footer() {
                   >
                     <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
                     <span>Terms & Conditions</span>
+                  </Link>
+                  <Link
+                    to="/mediaroom"
+                    className="relative flex items-center gap-2 hover:text-white cursor-pointer group/link"
+                  >
+                    <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
+                    <span>Media Room</span>
                   </Link>
                   <Link
                     to="/compliancepolicy"
@@ -207,15 +256,15 @@ function Footer() {
                   </a>
                 </nav>
                 <div className="mt-4">
-              <p className="text-sm text-gray-400 font-semibold mb-2">Customer Support Number:</p>
-              <a
-                href="tel:+919726286000"
-                className="flex items-center gap-2 text-white hover:text-[#bb402a] group"
-              >
-                <FaPhone className="text-[#bb402a] text-sm" />
-                <span className="text-base font-bold">+91 97262 86000</span>
-              </a>
-            </div>
+                  <p className="text-sm text-gray-400 font-semibold mb-2">Customer Support Number:</p>
+                  <a
+                    href="tel:+919726286000"
+                    className="flex items-center gap-2 text-white hover:text-[#bb402a] group"
+                  >
+                    <FaPhone className="text-[#bb402a] text-sm" />
+                    <span className="text-base font-bold">+91 97262 86000</span>
+                  </a>
+                </div>
               </div>
 
             </div>

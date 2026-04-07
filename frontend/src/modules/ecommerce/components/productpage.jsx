@@ -19,57 +19,38 @@ const SHADE_COLORS = [
 
 function ProductPage() {
   const [product, setProduct] = useState(null);
-  const [qty, setQty] = useState(product?.qty || 1);
+  const [qty, setQty] = useState(1);
   const { id } = useParams();
   const navigate = useNavigate();
 
- useEffect(() => {
-  api
-    .get(`/product/${id}`)
-    .then((res) => setProduct(res.data))
-    .catch((err) => console.error(err));
-}, [id]);
- const handleAddToCart = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  useEffect(() => {
+    api
+      .get(`/product/${id}`)
+      .then((res) => setProduct(res.data))
+      .catch((err) => console.error(err));
+  }, [id]);
 
-  if (!user) {
-    alert("Please login first");
-    return;
-  }
+  const handleAddToCart = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) { alert("Please login first"); return; }
+    if (!product || !product.id) { alert("Product not loaded properly"); return; }
 
-  if (!product || !product.id) {
-    alert("Product not loaded properly");
-    return;
-  }
-
-  api.post("/add-to-cart", {
-    member_id: user.id,
-    product_id: product.id,
-    quantity: qty,
-  })
-    .then(() => {
-      alert("Added to cart successfully");
-      navigate("/checkout");
+    api.post("/add-to-cart", {
+      member_id: user.id,
+      product_id: product.id,
+      quantity: qty,
     })
-    .catch((err) => {
-      console.error(err);
-      alert("Error adding to cart");
-    });
-};
+      .then(() => { alert("Added to cart successfully"); navigate("/checkout"); })
+      .catch((err) => { console.error(err); alert("Error adding to cart"); });
+  };
 
   const handleWishlist = () => {
     let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-
     const exists = wishlist.find((item) => item.id === product.id);
-
-    if (exists) {
-      alert("Already in wishlist ");
-      return;
-    }
-
+    if (exists) { alert("Already in wishlist"); return; }
     wishlist.push(product);
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    alert("Added to wishlist ");
+    alert("Added to wishlist");
   };
 
   if (!product) {
@@ -83,13 +64,17 @@ function ProductPage() {
     );
   }
 
+  const hasDiscount = product?.offer_price && product?.discount_percentage;
+
   return (
     <div className="bg-gray-50 min-h-screen py-4 sm:py-6 md:py-8">
       <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+
           {/* Product Detail Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8">
-            {/* Left section - Image */}
+
+            {/* Left — Image */}
             <div className="relative bg-gray-50 p-4 sm:p-6 lg:p-8">
               <div className="relative aspect-square max-w-md mx-auto">
                 <img
@@ -97,25 +82,17 @@ function ProductPage() {
                   alt="product"
                   className="w-full h-full object-contain rounded-lg"
                 />
-                <p className="absolute bottom-0 left-0 right-0 text-xs text-gray-600 text-center font-medium bg-white/90 backdrop-blur-sm px-3 py-2 rounded-b-lg">
-                  1000+ units sold in the last month
-                </p>
               </div>
             </div>
 
-            {/* Right Section - Product Info */}
+            {/* Right — Product Info */}
             <div className="p-4 sm:p-6 lg:p-8 lg:pl-0 flex flex-col">
+
               {/* Breadcrumb & Share */}
               <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <p className="text-xs text-gray-400 mb-2 tracking-wide">
-                    Home / Makeup / Face / Blush
-                  </p>
-
-                  <p className="text-xs text-gray-500 mb-1 underline underline-offset-2 hover:text-gray-700 cursor-pointer">
-                    {product?.brand}
-                  </p>
-                </div>
+                <p className="text-xs text-gray-500 mb-1 underline underline-offset-2 hover:text-gray-700 cursor-pointer">
+                  {product?.brand}
+                </p>
                 <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
                   <FiShare2 className="text-gray-500 text-lg hover:text-gray-700" />
                 </button>
@@ -127,31 +104,37 @@ function ProductPage() {
               </h1>
 
               {/* Price Section */}
-              <div className="flex items-baseline flex-wrap gap-2 sm:gap-3 mb-6">
+              <div className="flex items-baseline flex-wrap gap-2 sm:gap-3 mb-2">
+                {/* Offer price (main) */}
                 <span className="text-2xl sm:text-3xl font-bold text-gray-900">
-                  ₹{product?.price}
+                  ₹{hasDiscount ? product.offer_price : product.price}
                 </span>
-                {/* <span className="line-through text-gray-400 text-base sm:text-lg">
-                  ₹549
-                </span>
-                <span className="text-green-600 text-sm sm:text-base font-medium bg-green-50 px-2 py-0.5 rounded">
-                  10% Off 
-                </span>*/}
+
+                {/* Original price strikethrough */}
+                {hasDiscount && (
+                  <span className="line-through text-gray-400 text-base sm:text-lg">
+                    ₹{product.price}
+                  </span>
+                )}
+
+                {/* Discount badge */}
+                {hasDiscount && (
+                  <span className="text-green-600 text-sm sm:text-base font-semibold bg-green-50 px-2 py-0.5 rounded">
+                    {product.discount_percentage}% Off
+                  </span>
+                )}
               </div>
 
-              <p className="text-xs text-gray-400 -mt-4 mb-4">
-                Inclusive of all taxes
-              </p>
+              <p className="text-xs text-gray-400 mb-4">Inclusive of all taxes</p>
+
               <p className="text-sm text-gray-600">{product?.description}</p>
 
               {/* Divider */}
               <div className="border-t border-gray-100 my-4"></div>
 
-              {/* Quantity Section */}
+              {/* Quantity */}
               <div className="mb-6">
-                <p className="text-sm font-medium text-gray-700 mb-3">
-                  Quantity
-                </p>
+                <p className="text-sm font-medium text-gray-700 mb-3">Quantity</p>
                 <div className="flex items-center gap-1 border border-gray-200 rounded-lg w-fit">
                   <button
                     onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
@@ -159,11 +142,7 @@ function ProductPage() {
                   >
                     −
                   </button>
-
-                  <span className="w-12 text-center font-semibold text-gray-900">
-                    {qty}
-                  </span>
-
+                  <span className="w-12 text-center font-semibold text-gray-900">{qty}</span>
                   <button
                     onClick={() => setQty(qty + 1)}
                     className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-r-lg text-lg font-medium text-gray-600 transition-colors"
@@ -173,7 +152,7 @@ function ProductPage() {
                 </div>
               </div>
 
-              {/* Button Section */}
+              {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 mt-auto">
                 <button
                   onClick={handleAddToCart}
@@ -188,6 +167,7 @@ function ProductPage() {
                   Save to Wishlist
                 </button>
               </div>
+
             </div>
           </div>
         </div>

@@ -9,16 +9,16 @@ function HomeBanner() {
   const navigate = useNavigate();
 
   const images = [
-    "/images/ecom/video1.mp4",
-    "/images/ecom/Banner2.jpg",
-    "/images/ecom/Banner.jpg",
+    "/images/video1.mp4",
+    "/images/Banner2.png",
+    "/images/Banner.jpg",
   ];
 
   useEffect(() => {
     api.get("/categories")
       .then((res) => setCategories(res.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, []);   
 
   useEffect(() => {
     const timer = setInterval(() => {

@@ -179,7 +179,7 @@ function Signup() {
 
                 alert(`Sign up successful!\nMember ID: ${generatedMemberId}`);
 
-                navigate("/");
+                navigate("/login");
 
             } catch (error) {
                 console.log(error.response?.data);

@@ -43,7 +43,7 @@ function Login() {
       localStorage.setItem("isAuth", "true");
       localStorage.setItem("user", JSON.stringify(res.data.data));
 
-      navigate("/home");
+      navigate("/");
 
     } catch (error) {
       console.log(error.response?.data);
@@ -59,7 +59,7 @@ function Login() {
 
         <div className="text-center py-6">
           <img
-            src="/images/ecom/4steplogo.png"
+            src="/images/4steplogo.png"
             className="mx-auto h-16 mb-3"
             alt="4step logo"
           />

@@ -4,7 +4,7 @@ import { FaShippingFast, FaHeart, FaStar } from "react-icons/fa";
 import { TbTruckReturn } from "react-icons/tb";
 import { GrUserExpert } from "react-icons/gr";
 import MemberModal from "../components/membermodal";
-
+import ProgressBar from "./progressbar";
 function HomeTopShelf() {
 
     
@@ -16,7 +16,7 @@ function HomeTopShelf() {
                 <div className="px-0 sm:px-6 relative">
                     <div className="relative rounded-lg overflow-hidden">
                         <img
-                            src="/images/ecom/topshelf.jpg"
+                            src="/images/topshelf.jpg"
                             alt="Top Shelf"
                             className="w-full h-40 sm:h-50 object-contain sm:object-cover"
                         />
@@ -43,7 +43,7 @@ function HomeTopShelf() {
                 <div className="px-0 sm:px-6 relative mt-10 sm:mt-20">
                     <div className="relative  overflow-hidden">
                         <img
-                            src="/images/ecom/chatnow.jpg"
+                            src="/images/chatnow.jpg"
                             alt="Chat"
                             className="w-full h-40 sm:h-50 object-contain sm:object-cover"
                         />
@@ -52,46 +52,7 @@ function HomeTopShelf() {
                 </div>
 
 {/*         AUTHENTICATION SECTION         */}
-                <div className="px-0 sm:px-6 mt-10 sm:mt-20 bg-gray-100 rounded-lg">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-3 sm:px-6 py-6 sm:py-10">
-                        <div className="flex flex-col">
-                            <GoVerified className="text-gray-700 text-2xl mb-4" />
-                            <p className="font-semibold text-gray-700 mb-2">
-                                100% Authentic
-                            </p>
-                            <p className="font-semibold text-sm text-gray-500">
-                                All our products are directly sourced from brands
-                            </p>
-                        </div>
-                        <div className="flex flex-col">
-                            <FaShippingFast className="text-gray-700 text-2xl mb-4" />
-                            <p className="font-semibold text-gray-700 mb-2">
-                                Free Shipping
-                            </p>
-                            <p className="font-semibold text-sm text-gray-500">
-                                On all orders above $299
-                            </p>
-                        </div>
-                        <div className="flex flex-col">
-                            <GrUserExpert className="text-gray-700 text-2xl mb-4" />
-                            <p className="font-semibold text-gray-700 mb-2">
-                                Certified Beauty Advisors
-                            </p>
-                            <p className="font-semibold text-sm text-gray-500">
-                                Get expert consultations
-                            </p>
-                        </div>
-                        <div className="flex flex-col">
-                            <TbTruckReturn className="text-gray-700 text-3xl mb-3" />
-                            <p className="font-semibold text-gray-700 mb-2">
-                                Easy Returns
-                            </p>
-                            <p className="font-semibold text-sm text-gray-500">
-                                Hassle-free pick-ups and refunds
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ProgressBar />
 
             </div>
         </div>

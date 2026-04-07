@@ -17,6 +17,13 @@ import ShippingPolicy from './pages/shippingpolicy'
 import ProfilePage from './pages/profilepage'
 import CategoryProducts from './pages/categoryproduct'
 import DisclaimerPolicy from './pages/sellerdisclamir'
+import Orders from './pages/Orders'
+import Trackorder from './pages/Trackorder'
+import Mediaroom from './pages/mediaroom'
+import Aboutus from './pages/aboutus'
+import Gallery from './pages/gallery'
+import Corepromoter from './pages/corepromoters'
+
 
 
 export default function EcommerceRoutes() {
@@ -40,7 +47,15 @@ export default function EcommerceRoutes() {
   <Route path="shippingpolicy" element={<ShippingPolicy />} />
   <Route path="profile" element={<ProfilePage />} />
   <Route path="category/:id" element={<CategoryProducts />} />
+  <Route path="orders" element={<Orders />} />
+  <Route path="trackorder" element={<Trackorder />} />
   <Route path="sellerdisclaimer" element={<DisclaimerPolicy />} />
+  <Route path="mediaroom" element={<Mediaroom />} />
+  <Route path="aboutus" element={<Aboutus />} />
+  <Route path="gallery" element={<Gallery />} />
+  <Route path="corepromoters" element={<Corepromoter />} />
+  
+
 </Route>
   );
 }

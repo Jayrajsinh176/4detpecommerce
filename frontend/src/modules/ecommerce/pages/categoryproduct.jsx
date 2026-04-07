@@ -130,11 +130,32 @@ function CategoryProducts() {
                     {item.name}
                   </p>
 
-                  <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-base sm:text-lg font-bold text-gray-900">
-                      ₹{item.price?.toLocaleString()}
-                    </span>
-                  </div>
+                  <div className="mt-2 flex items-center gap-2 flex-wrap">
+
+  {item.offer_price && item.discount_percentage > 0 ? (
+    <>
+      {/* Offer Price */}
+      <span className="text-base sm:text-lg font-bold text-gray-900">
+        ₹{item.offer_price?.toLocaleString()}
+      </span>
+
+      {/* Original Price */}
+      <span className="text-sm text-gray-400 line-through">
+        ₹{item.price?.toLocaleString()}
+      </span>
+
+      {/* Discount Badge */}
+      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-semibold">
+        {item.discount_percentage}% OFF
+      </span>
+    </>
+  ) : (
+    <span className="text-base sm:text-lg font-bold text-gray-900">
+      ₹{item.price?.toLocaleString()}
+    </span>
+  )}
+
+</div>
 
                   {/* Button */}
                   <button

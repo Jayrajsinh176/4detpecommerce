@@ -72,8 +72,7 @@ class MemberControllerecom extends Controller
         $member = Memberecom::findOrFail($id);
 
         $request->validate([
-            'firstName' => 'required|string|max:255',
-            'lastName' => 'required|string|max:255',
+            'fullname' => 'required|string|max:255',
             'dob' => 'required|date',
             'gender' => 'required|in:Male,Female,Other',
             'email' => [
@@ -81,28 +80,29 @@ class MemberControllerecom extends Controller
                 'email',
                 Rule::unique('ecom_members', 'email')->ignore($member->id)
             ],
-            'mobileNo' => [
+            'mobile_no' => [
                 'required',
                 'digits:10',
                 Rule::unique('ecom_members', 'mobile_no')->ignore($member->id)
             ],
             'address' => 'required|string',
-            'pinCode' => 'required|digits:6',
+            'pin_code' => 'required|digits:6',
             'state' => 'required|string',
             'city' => 'required|string',
         ]);
 
-        $member->update([
-            'fullname' => $request->firstName . ' ' . $request->lastName,
-            'dob' => $request->dob,
-            'gender' => $request->gender,
-            'email' => $request->email,
-            'mobile_no' => $request->mobileNo,
-            'address' => $request->address,
-            'pin_code' => $request->pinCode,
-            'state' => $request->state,
-            'city' => $request->city,
-        ]);
+        $member->fullname = $request->firstName . ' ' . $request->lastName;
+        $member->dob = $request->dob;
+        $member->gender = $request->gender;
+        $member->email = $request->email;
+        $member->mobile_no = $request->mobileNo;
+        $member->address = $request->address;
+        $member->pin_code = $request->pinCode;
+        $member->state = $request->state;
+        $member->city = $request->city;
+
+        $member->save(); // 🔥 THIS IS THE FIX
+        $member->refresh();
 
         return response()->json([
             'message' => 'Profile updated successfully',

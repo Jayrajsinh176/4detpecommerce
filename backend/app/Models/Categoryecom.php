@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class Categoryecom extends Model
 {
- protected $table = 'ecom_categories';
+    protected $table = 'ecom_categories';
 
-    protected $fillable = ['name','image'];
+    protected $fillable = ['name', 'image'];
 
     public function products()
     {
         return $this->hasMany(Product::class);
     }
+   public function getImageAttribute($value)
+{
+    return asset('storage/' . $value);
+}
 }

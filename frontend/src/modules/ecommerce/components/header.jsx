@@ -9,17 +9,28 @@ const CATEGORIES = [
     "What's New", "Makeup", "Skin", "Hair", "Fragrance", "Men", "Bath & Body", "Tools & Appliances", "Mom & Baby", "Wellness", "Minis", "Homegrown", "Gifts"
 ];
 
+const RESOURCES = [
+    { label: "Media Room",      to: "/mediaroom" },
+    { label: "Core Promoters",  to: "/corepromoters" },
+    { label: "Event Planning",  to: "/event-planning" },
+    { label: "Downloads",       to: "/downloads" },
+];
+
 function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen]       = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const profileRef = useRef(null);
-    const location = useLocation();
+    const [isResourceOpen, setIsResourceOpen] = useState(false);
+
+    const profileRef  = useRef(null);
+    const resourceRef = useRef(null);
+    const location    = useLocation();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (profileRef.current && !profileRef.current.contains(e.target)) {
+            if (profileRef.current && !profileRef.current.contains(e.target))
                 setIsProfileOpen(false);
-            }
+            if (resourceRef.current && !resourceRef.current.contains(e.target))
+                setIsResourceOpen(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -27,6 +38,7 @@ function Header() {
 
     useEffect(() => {
         setIsMenuOpen(false);
+        setIsResourceOpen(false);
     }, [location.pathname]);
 
     const user = JSON.parse(localStorage.getItem("user"));
@@ -40,49 +52,82 @@ function Header() {
     return (
         <>
             <header className="sticky top-0 z-50 w-full bg-white" style={{ boxShadow: '0 1px 0 #e5e7eb' }}>
-                {/* ── Top Right Links (Track Order | Help Centre) ── */}
+
+                {/* ── Top Right Links ── */}
                 <div className="hidden md:block">
                     <div className="max-w-screen-xl mx-auto px-6">
                         <div className="flex justify-end items-center h-8 text-sm text-gray-600">
-                            <Link to="/track-order" className="hover:text-gray-900 transition-colors">
-                                Track Order
-                            </Link>
+                            <Link to="/trackorder" className="hover:text-gray-900 transition-colors">Track Order</Link>
                             <span className="mx-2 text-gray-400">|</span>
-                            <Link to="/helpcenter" className="hover:text-gray-900 transition-colors">
-                                Help Centre
-                            </Link>
+                            <Link to="/helpform" className="hover:text-gray-900 transition-colors">Help Centre</Link>
                         </div>
                     </div>
                 </div>
 
-                {/* ── Main row: Logo | Nav Links | Search | Welcome | Cart | Profile ── */}
+                {/* ── Main row ── */}
                 <div className="hidden md:block border-b border-gray-100">
                     <div className="max-w-screen-xl mx-auto px-6">
                         <div className="flex items-center h-[70px] gap-5">
 
                             {/* Logo */}
-                            <Link to="/home" className="shrink-0">
-                                <img src="/images/ecom/4steplogo.png" alt="4step" className="h-12 w-auto" />
+                            <Link to="/" className="shrink-0">
+                                <img src="/images/4steplogo.png" alt="4step" className="h-12 w-auto" />
                             </Link>
 
                             {/* Nav links */}
                             <nav className="flex items-center gap-0.6">
                                 {[
-                                    { to: '/home', label: 'Home' },
-                                    { to: '/allproduct', label: 'All Products' },
-                                   
-                                    { to: '/', label: 'Gallery' },
-                                    { to: '/', label: 'Resources' },
-                                    { to: '/', label: 'About Us' },
+                                    { to: '/',          label: 'Home' },
+                                    { to: '/allproduct', label: 'Products' },
+                                    { to: '/gallery',   label: 'Gallery' },
                                 ].map(item => (
                                     <Link
-                                        key={item.to}
+                                        key={item.label}
                                         to={item.to}
                                         className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap"
                                     >
                                         {item.label}
                                     </Link>
                                 ))}
+
+                               
+<div className="relative" ref={resourceRef}>
+    <button
+        onClick={() => setIsResourceOpen(!isResourceOpen)}
+        className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap"
+    >
+        Resources
+    </button>
+
+    {isResourceOpen && (
+        <div
+            className="absolute left-0 mt-2 w-52 bg-white rounded-xl py-1 z-50"
+            style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)', border: '1px solid #f0f0f0' }}
+        >
+            {RESOURCES.map((item, i) => (
+                <React.Fragment key={item.to}>
+                    <Link
+                        to={item.to}
+                        onClick={() => setIsResourceOpen(false)}
+                        className="block px-5 py-3 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                    >
+                        {item.label}
+                    </Link>
+                    {i < RESOURCES.length - 1 && (
+                        <div className="mx-4 border-t border-dashed border-gray-100" />
+                    )}
+                </React.Fragment>
+            ))}
+        </div>
+    )}
+</div>
+
+                                <Link
+                                    to="/aboutus"
+                                    className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap"
+                                >
+                                    About Us
+                                </Link>
                             </nav>
 
                             {/* Push right */}
@@ -98,7 +143,7 @@ function Header() {
                                 />
                             </div>
 
-                            {/* Welcome + Login — RIGHT side */}
+                            {/* Welcome + Login */}
                             {!user ? (
                                 <div className="shrink-0 text-xs leading-snug text-gray-500 border-l border-gray-200 pl-5">
                                     <p className="mb-0.5">Welcome</p>
@@ -152,8 +197,7 @@ function Header() {
                                                 <div className="py-1">
                                                     {[
                                                         { to: '/profile', icon: <FaUser />, label: 'My Profile' },
-                                                        { to: '/orders', icon: <FaBox />, label: 'My Orders' },
-                                                        { to: '/track-order', icon: <FaTruck />, label: 'Track Order' },
+                                                        { to: '/orders',  icon: <FaBox />,  label: 'My Orders' },
                                                     ].map(item => (
                                                         <Link
                                                             key={item.to}
@@ -217,7 +261,7 @@ function Header() {
                 <div className="md:hidden">
                     <div className="flex items-center justify-between px-4 h-14">
                         <Link to="/home" className="shrink-0">
-                            <img src="/images/ecom/4steplogo.png" alt="4step" className="h-9 w-auto" />
+                            <img src="/images/4steplogo.png" alt="4step" className="h-9 w-auto" />
                         </Link>
                         <div className="flex items-center gap-1">
                             <Link to="/checkout" className="flex items-center justify-center w-9 h-9 rounded-full text-xl text-gray-700 hover:bg-gray-100">
@@ -254,18 +298,25 @@ function Header() {
                                     </div>
                                 ) : (
                                     <div className="flex gap-2 py-2 mb-1">
-                                        <Link to="/login" className="flex-1 text-center py-2 rounded-xl bg-gray-900 text-white font-semibold text-sm">Sign In</Link>
+                                        <Link to="/login"  className="flex-1 text-center py-2 rounded-xl bg-gray-900 text-white font-semibold text-sm">Sign In</Link>
                                         <Link to="/signup" className="flex-1 text-center py-2 rounded-xl border border-gray-900 text-gray-900 font-semibold text-sm">Register</Link>
                                     </div>
                                 )}
 
                                 <div className="h-px bg-gray-100 my-1" />
                                 {[
-                                    { to: '/home', label: 'Home' },
+                                    { to: '/home',       label: 'Home' },
                                     { to: '/allproduct', label: 'All Products' },
-                                    { to: '/helpform', label: 'Contact' },
+                                    { to: '/helpform',   label: 'Contact' },
                                 ].map(item => (
                                     <Link key={item.to} to={item.to} className="py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors font-medium">{item.label}</Link>
+                                ))}
+
+                                {/* Mobile Resources */}
+                                <div className="h-px bg-gray-100 my-1" />
+                                <p className="text-xs text-gray-400 px-3 pt-1 pb-0.5 uppercase tracking-wider">Resources</p>
+                                {RESOURCES.map(item => (
+                                    <Link key={item.to} to={item.to} className="py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors text-gray-600">{item.label}</Link>
                                 ))}
 
                                 <div className="h-px bg-gray-100 my-1" />
@@ -278,8 +329,8 @@ function Header() {
                                     <>
                                         <div className="h-px bg-gray-100 my-1" />
                                         {[
-                                            { to: '/profile', icon: <FaUser />, label: 'My Profile' },
-                                            { to: '/orders', icon: <FaBox />, label: 'My Orders' },
+                                            { to: '/profile',     icon: <FaUser />,  label: 'My Profile' },
+                                            { to: '/orders',      icon: <FaBox />,   label: 'My Orders' },
                                             { to: '/track-order', icon: <FaTruck />, label: 'Track Order' },
                                         ].map(item => (
                                             <Link key={item.to} to={item.to} className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors">

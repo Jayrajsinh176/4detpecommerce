@@ -19,4 +19,12 @@ class Cartitemecom extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+   
+
+    // 🔥 Item → Order
+    public function order()
+    {
+        return $this->belongsTo(Orderecom::class, 'order_id');
+    }
 }

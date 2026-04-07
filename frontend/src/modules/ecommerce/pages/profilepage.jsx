@@ -118,15 +118,13 @@ function ProfilePage() {
   if (!validate()) return;
 
   setIsLoading(true);
-  setMessage({ type: "", text: "" });
 
   try {
-    // Split fullname into first + last
     const nameParts = formData.fullname.trim().split(" ");
 
     const response = await api.put(`/members/${user.id}`, {
-      firstName: nameParts[0],
-      lastName: nameParts.slice(1).join(" ") || nameParts[0],
+      firstName: nameParts[0] || "",
+      lastName: nameParts.slice(1).join(" ") || nameParts[0] || "",
       email: formData.email,
       mobileNo: formData.mobile_no,
       address: formData.address,
@@ -137,10 +135,10 @@ function ProfilePage() {
       gender: formData.gender,
     });
 
-    // ✅ Get fresh data from backend
+    console.log("SUCCESS:", response.data);
+
     const updatedUser = response.data.data;
 
-    // ✅ Store updated data
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
 
@@ -148,39 +146,17 @@ function ProfilePage() {
 
     setMessage({
       type: "success",
-      text: response.data.message || "Profile updated successfully!",
+      text: "Profile updated successfully!",
     });
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setTimeout(() => {
-      setMessage({ type: "", text: "" });
-    }, 3000);
-
   } catch (error) {
-    console.error("Update error:", error);
+    console.log("ERROR FULL:", error.response?.data);
 
-    if (error.response && error.response.data.errors) {
-      const validationErrors = {};
+    setMessage({
+      type: "error",
+      text: error.response?.data?.message || "Update failed",
+    });
 
-      Object.keys(error.response.data.errors).forEach((key) => {
-        validationErrors[key] = error.response.data.errors[key][0];
-      });
-
-      setErrors(validationErrors);
-
-      setMessage({
-        type: "error",
-        text: "Please fix the validation errors",
-      });
-    } else {
-      setMessage({
-        type: "error",
-        text: "Failed to update profile",
-      });
-    }
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
   } finally {
     setIsLoading(false);
   }

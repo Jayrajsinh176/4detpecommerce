@@ -6,28 +6,21 @@ import { GrUserExpert } from "react-icons/gr";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "./progressbar";
+
 const TRUST_ITEMS = [
-  {
-    icon: <GoVerified size={22} />,
-    title: "100% Authentic",
-    desc: "All products directly sourced from brands",
-  },
-  {
-    icon: <FaShippingFast size={22} />,
-    title: "Free Shipping",
-    desc: "On all orders above ₹299",
-  },
-  {
-    icon: <GrUserExpert size={22} />,
-    title: "Certified Advisors",
-    desc: "Get expert consultations anytime",
-  },
-  {
-    icon: <TbTruckReturn size={22} />,
-    title: "Easy Returns",
-    desc: "Hassle-free pick-ups & refunds",
-  },
+  { icon: <GoVerified size={22} />, title: "100% Authentic", desc: "All products directly sourced from brands" },
+  { icon: <FaShippingFast size={22} />, title: "Free Shipping", desc: "On all orders above ₹299" },
+  { icon: <GrUserExpert size={22} />, title: "Certified Advisors", desc: "Get expert consultations anytime" },
+  { icon: <TbTruckReturn size={22} />, title: "Easy Returns", desc: "Hassle-free pick-ups & refunds" },
 ];
+
+const isValid = (val) => {
+  if (val === null || val === undefined) return false;
+  const num = parseFloat(String(val).replace(/,/g, ""));
+  return !isNaN(num) && num > 0;
+};
+
+const toNum = (val) => parseFloat(String(val).replace(/,/g, "")) || 0;
 
 function HomeTopShelf() {
   const [viralProducts, setViralProducts] = useState([]);
@@ -97,7 +90,7 @@ function HomeTopShelf() {
         }
         .tsh-name {
           font-size: 13px; font-weight: 500; color: #1a1a1a;
-          line-height: 1.4; margin-bottom: 8px;
+          line-height: 1.4;
           display: -webkit-box; -webkit-line-clamp: 2;
           -webkit-box-orient: vertical; overflow: hidden; min-height: 36px;
         }
@@ -119,7 +112,6 @@ function HomeTopShelf() {
         }
         .tsh-btn:hover { background: #333; }
 
-        /* ── Trust bar ── */
         .trust-bar {
           display: grid; grid-template-columns: repeat(4,1fr);
           border: 1px solid #ebebeb; border-radius: 14px; overflow: hidden;
@@ -157,12 +149,11 @@ function HomeTopShelf() {
 
           {/* ── Top Shelf Banner ── */}
           <div className="rounded-2xl overflow-hidden" style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
-            <img src="/images/ecom/topshelf.jpg" alt="Top Shelf" className="w-full h-auto object-contain block" />
+            <img src="/images/topshelf.jpg" alt="Top Shelf" className="w-full h-auto object-contain block" />
           </div>
 
           {/* ── Trending Now ── */}
           <div>
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">✦ Curated for you</p>
@@ -176,38 +167,66 @@ function HomeTopShelf() {
               </button>
             </div>
 
-            {/* 4-col grid on desktop, 2-col on mobile */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-              {viralProducts.slice(5, 13).map((item, index) => (
-                <div key={index} className="tsh-card">
-                  <div
-                    className="tsh-img-wrap"
-                    style={{ height: 'clamp(150px, 20vw, 230px)' }}
-                    onClick={() => navigate(`/product/${item.id}`)}
-                  >
-                    <img src={item.image} alt={item.name} style={{ height: '100%' }} />
-                    <button
-                      className="tsh-wish"
-                      onClick={(e) => { e.stopPropagation(); toggleWishlist(item.id); }}
+              {viralProducts.slice(5, 9).map((item, index) => {
+                const offerValid    = isValid(item.offer_price);
+                const discountValid = isValid(item.discount_percentage);
+                const displayPrice  = offerValid ? toNum(item.offer_price) : toNum(item.price);
+
+                return (
+                  <div key={index} className="tsh-card">
+                    <div
+                      className="tsh-img-wrap"
+                      style={{ height: 'clamp(150px, 20vw, 230px)' }}
+                      onClick={() => navigate(`/product/${item.id}`)}
                     >
-                      <FaHeart size={12} style={{ color: wishlist[item.id] ? '#e53e3e' : '#ccc', transition: 'color 0.2s' }} />
-                    </button>
-                  </div>
-                  <div className="tsh-body">
-                    <p className="tsh-brand">{item.brand}</p>
-                    <p className="tsh-name" onClick={() => navigate(`/product/${item.id}`)}>
-                      {item.name}
-                    </p>
-                    <div>
-                      <span className="tsh-price">₹{item.price}</span>
-                      <span className="tsh-price-label">incl. taxes</span>
+                      <img src={item.image} alt={item.name} style={{ height: '100%' }} />
+                      <button
+                        className="tsh-wish"
+                        onClick={(e) => { e.stopPropagation(); toggleWishlist(item.id); }}
+                      >
+                        <FaHeart size={12} style={{ color: wishlist[item.id] ? '#e53e3e' : '#ccc', transition: 'color 0.2s' }} />
+                      </button>
                     </div>
-                    <button className="tsh-btn" onClick={() => handleAddToBag(item)}>
-                      <FaShoppingBag size={11} /> Add to Bag
-                    </button>
+
+                    <div className="tsh-body">
+                      <p className="tsh-brand">{item.brand}</p>
+
+                      {/* Name + Discount badge */}
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 6, marginBottom: 8 }}>
+                        <p className="tsh-name" onClick={() => navigate(`/product/${item.id}`)}>
+                          {item.name}
+                        </p>
+                        {discountValid && (
+                          <span style={{
+                            flexShrink: 0, fontSize: 13, fontWeight: 700,
+                            background: "#e8f5e9", color: "#2e7d32",
+                            borderRadius: 6, padding: "3px 7px",
+                            lineHeight: 1.4, marginTop: 2,
+                          }}>
+                            {toNum(item.discount_percentage)}% off
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Price row */}
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                        <span className="tsh-price">₹{displayPrice}</span>
+                        {offerValid && (
+                          <span style={{ fontSize: 13, color: "#aaa", textDecoration: "line-through", fontWeight: 400 }}>
+                            ₹{toNum(item.price)}
+                          </span>
+                        )}
+                        <span className="tsh-price-label">incl. taxes</span>
+                      </div>
+
+                      <button className="tsh-btn" onClick={() => handleAddToBag(item)}>
+                        <FaShoppingBag size={11} /> Add to Bag
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Mobile view all */}
@@ -223,14 +242,12 @@ function HomeTopShelf() {
 
           {/* ── Chat Banner ── */}
           <div className="rounded-2xl overflow-hidden" style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.07)' }}>
-            <img src="/images/ecom/chatnow.jpg" alt="Chat Now" className="w-full object-contain block" style={{ maxHeight: 260 }} />
+            <img src="/images/chatnow.jpg" alt="Chat Now" className="w-full object-contain block" style={{ maxHeight: 260 }} />
           </div>
 
           {/* ── Trust Bar ── */}
-           <ProgressBar />
-
+          <ProgressBar />
         </div>
-      
       </div>
     </>
   );
