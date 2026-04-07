@@ -9,8 +9,7 @@ function Helpform() {
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    mobile: '',
-    email: '',
+
     category: '',
     subject: '',
     details: ''
@@ -177,7 +176,7 @@ function Helpform() {
               <input
                 type="text"
                 name="mobile"
-                value={formData.mobile_no}
+                value={formData.mobile_no || ''}
                 readOnly
                 className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100"
               />
@@ -190,7 +189,7 @@ function Helpform() {
               <input
                 type="email"
                 name="email"
-                value={formData.email}
+                value={formData.email || ''}
                 readOnly
                 className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100"
               />
@@ -299,50 +298,48 @@ function Helpform() {
           <h2 className="text-lg font-semibold mb-4">Support Chat</h2>
 
           {tickets.length === 0 && (
-            <p className="text-gray-500">No tickets yet.</p>
+            <p className="text-sm text-gray-400 mt-6">No tickets submitted yet.</p>
           )}
 
           {tickets.map((t) => (
-            <div key={t.id} className="mb-6 border rounded-lg p-4 shadow-sm">
+            <div key={t.id} className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
 
-              {/* SUBJECT + STATUS */}
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="font-semibold text-sm">{t.subject}</h3>
-                <span className={`text-xs px-2 py-1 rounded ${t.status === "pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
+                <div>
+                  <p className="text-sm font-medium text-gray-800">{t.subject}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{t.category}</p>
+                </div>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${t.status === 'pending'
+                    ? 'bg-amber-50 text-amber-600'
+                    : 'bg-green-50 text-green-600'
                   }`}>
                   {t.status}
                 </span>
               </div>
-<div className="flex justify-start mb-2">
-                <div className="bg-gray-200 text-sm px-3 py-2 rounded-lg max-w-xs">
-                  {t.category}
-                </div>
-              </div>
-              <div className="flex justify-start mb-2">
-                <div className="bg-gray-200 text-sm px-3 py-2 rounded-lg max-w-xs">
-                  {t.subject}
-                </div>
-              </div>
-              {/* USER MESSAGE */}
-              <div className="flex justify-start mb-2">
-                <div className="bg-gray-200 text-sm px-3 py-2 rounded-lg max-w-xs">
-                  {t.details}
-                </div>
-              </div>
 
-              {/* ADMIN REPLY */}
-              {t.admin_reply && (
-                <div className="flex justify-end mt-2">
-                  <div className="bg-green-200 text-sm px-3 py-2 rounded-lg max-w-xs">
-                    {t.admin_reply}
+              <div className="px-4 py-4 space-y-3 bg-white">
+                <div className="flex gap-3">
+                  <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-[11px] font-semibold text-gray-500 shrink-0 mt-0.5">
+                    You
                   </div>
+                  <p className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 leading-relaxed">
+                    {t.details}
+                  </p>
                 </div>
-              )}
 
-              {/* NO REPLY */}
-              {!t.admin_reply && (
-                <p className="text-xs text-gray-400 mt-2">Waiting for admin reply...</p>
-              )}
+                {t.admin_reply ? (
+                  <div className="flex gap-3 flex-row-reverse">
+                    <div className="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center text-[11px] font-semibold text-blue-500 shrink-0 mt-0.5">
+                      CS
+                    </div>
+                    <p className="text-sm text-white bg-blue-500 rounded-lg px-3 py-2 leading-relaxed max-w-sm">
+                      {t.admin_reply}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 pl-10">Waiting for reply...</p>
+                )}
+              </div>
 
             </div>
           ))}

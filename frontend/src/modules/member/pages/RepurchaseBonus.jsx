@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import React, { useEffect, useMemo, useState } from "react";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fourstepretail.com/api";
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
 
 const RepurchaseBonus = () => {
   const [rows, setRows] = useState([]);
@@ -32,22 +32,17 @@ const RepurchaseBonus = () => {
           ? `?user_id=${encodeURIComponent(memberUserId)}&type=monthly`
           : "?type=monthly";
 
-        const response = await fetch(
-          `${API_BASE_URL}/bonuses/loyalty${query}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-            },
+        const response = await fetch(`${API_BASE_URL}/bonuses/loyalty${query}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
           },
-        );
+        });
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            data?.message || "Unable to fetch repurchase bonus data",
-          );
+          throw new Error(data?.message || "Unable to fetch repurchase bonus data");
         }
 
         if (isMounted) {
@@ -55,9 +50,7 @@ const RepurchaseBonus = () => {
         }
       } catch (fetchError) {
         if (isMounted) {
-          setError(
-            fetchError.message || "Unable to fetch repurchase bonus data",
-          );
+          setError(fetchError.message || "Unable to fetch repurchase bonus data");
         }
       } finally {
         if (isMounted) {
@@ -110,75 +103,63 @@ const RepurchaseBonus = () => {
 
   return (
     <div className="flex flex-col lg:flex-row bg-gray-100 min-h-screen">
-      <Sidebar />
+          <Sidebar />
+    
+          <div className="flex-1 min-w-0 flex flex-col">
+            <Navbar />
+            <div className="p-8 bg-gray-100 min-h-screen">
 
-      <div className="flex-1 min-w-0 flex flex-col">
-        <Navbar />
-        <div className="p-8 bg-gray-100 min-h-screen">
-          <h1 className="text-3xl font-bold text-[#B0422E] text-center mb-8">
-            Loyalty Repurchase Bonus
-          </h1>
-          {isLoading && (
-            <p className="text-center text-gray-500 mb-4">Loading bonuses...</p>
-          )}
-          {error && <p className="text-center text-red-500 mb-4">{error}</p>}
+            <h1 className="text-3xl font-bold text-[#B0422E] text-center mb-8">
+             Repurchase Bonus
+            </h1>
+            {isLoading && <p className="text-center text-gray-500 mb-4">Loading bonuses...</p>}
+            {error && <p className="text-center text-red-500 mb-4">{error}</p>}
 
-          <div className="bg-white rounded-2xl shadow p-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-center">
-                <thead>
-                  <tr className="bg-[#B0422E] text-white">
-                    <th className="p-3 rounded-l-xl">Sr No</th>
-                    <th className="p-3">Date</th>
-                    <th className="p-3">Transaction ID</th>
-                    <th className="p-3">Month</th>
-                    <th className="p-3">Repurchase Amount</th>
-                    <th className="p-3">Requirement</th>
-                    <th className="p-3">%</th>
-                    <th className="p-3">Earned</th>
-                    <th className="p-3 rounded-r-xl">Status</th>
-                  </tr>
-                </thead>
+            <div className="bg-white rounded-2xl shadow p-6">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-center">
 
-                <tbody>
-                  {!isLoading && rows.length === 0 && (
-                    <tr className="border-b">
-                      <td className="p-4" colSpan={9}>
-                        No Repurchase bonus data found
-                      </td>
-                    </tr>
-                  )}
+                                    <thead>
+                                    <tr className="bg-[#B0422E] text-white">
+                                    <th className="p-3 rounded-l-xl">Sr No</th>
+                                    <th className="p-3">Date</th>
+                                    <th className="p-3">Transaction ID</th>
+                                    <th className="p-3">Month</th>
+                                    <th className="p-3">Repurchase Amount</th>
+                                    <th className="p-3">Requirement</th>
+                                    <th className="p-3">%</th>
+                                    <th className="p-3">Earned</th>
+                                    <th className="p-3 rounded-r-xl">Status</th>
+                                    </tr>
+                                    </thead>
 
-                  {rows.map((row, index) => (
-                    <tr
-                      className="border-b"
-                      key={row.id ?? `${row.transaction_id}-${index}`}
-                    >
-                      <td className="p-4">
-                        {String(index + 1).padStart(2, "0")}
-                      </td>
-                      <td>{formatDate(row.date || `${row.month}-01`)}</td>
-                      <td>{row.transaction_id || "-"}</td>
-                      <td>{row.month || "-"}</td>
-                      <td>{formatCurrency(row.repurchase_amount)}</td>
-                      <td>
-                        {row.requirement_met
-                          ? "INR 500+ met"
-                          : "INR 500+ pending"}
-                      </td>
-                      <td>{Number(row.percentage || 0)}%</td>
-                      <td>{formatCurrency(row.earned)}</td>
-                      <td className={statusClass(row.status)}>
-                        {row.status || "Pending"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                                    <tbody>
+                                    {!isLoading && rows.length === 0 && (
+                                      <tr className="border-b">
+                                        <td className="p-4" colSpan={9}>No Repurchase bonus data found</td>
+                                      </tr>
+                                    )}
+
+                                    {rows.map((row, index) => (
+                                      <tr className="border-b" key={row.id ?? `${row.transaction_id}-${index}`}>
+                                        <td className="p-4">{String(index + 1).padStart(2, "0")}</td>
+                                        <td>{formatDate(row.date || `${row.month}-01`)}</td>
+                                        <td>{row.transaction_id || "-"}</td>
+                                        <td>{row.month || "-"}</td>
+                                        <td>{formatCurrency(row.repurchase_amount)}</td>
+                                        <td>{row.requirement_met ? "INR 500+ met" : "INR 500+ pending"}</td>
+                                        <td>{Number(row.percentage || 0)}%</td>
+                                        <td>{formatCurrency(row.earned)}</td>
+                                        <td className={statusClass(row.status)}>{row.status || "Pending"}</td>
+                                      </tr>
+                                    ))}
+                             </tbody>
+
+                        </table>
+                     </div>
+                 </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
   );
 };

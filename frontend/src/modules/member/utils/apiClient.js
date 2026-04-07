@@ -1,8 +1,13 @@
 const ENV_BASE = (import.meta.env.VITE_API_BASE_URL || "").trim();
 
 const getFallbackBaseUrls = () => {
+  const browserHost = typeof window !== "undefined" ? window.location.hostname : "127.0.0.1";
+
   const candidates = [
     ENV_BASE,
+    `http://${browserHost}:8000/api`,
+    "http://127.0.0.1:8000/api",
+    "http://localhost:8000/api",
     "https://fourstepretail.com/api",
     "/api",
   ].filter(Boolean);
@@ -13,16 +18,11 @@ const getFallbackBaseUrls = () => {
 let activeApiBase = null;
 
 export async function requestMemberApi(pathWithQuery, options = {}) {
-  const path = pathWithQuery.startsWith("/")
-    ? pathWithQuery
-    : `/${pathWithQuery}`;
+  const path = pathWithQuery.startsWith("/") ? pathWithQuery : `/${pathWithQuery}`;
   const fallbackBaseUrls = getFallbackBaseUrls();
 
   const orderedBaseUrls = activeApiBase
-    ? [
-        activeApiBase,
-        ...fallbackBaseUrls.filter((base) => base !== activeApiBase),
-      ]
+    ? [activeApiBase, ...fallbackBaseUrls.filter((base) => base !== activeApiBase)]
     : fallbackBaseUrls;
 
   let networkError = null;
@@ -32,9 +32,7 @@ export async function requestMemberApi(pathWithQuery, options = {}) {
     try {
       const response = await fetch(`${baseUrl}${path}`, options);
       const bodyText = await response.text();
-      const contentType = (
-        response.headers.get("content-type") || ""
-      ).toLowerCase();
+      const contentType = (response.headers.get("content-type") || "").toLowerCase();
 
       let data = {};
       if (bodyText) {
@@ -47,9 +45,7 @@ export async function requestMemberApi(pathWithQuery, options = {}) {
 
       const isLikelyJsonApi =
         contentType.includes("application/json") ||
-        (data &&
-          typeof data === "object" &&
-          ("message" in data || "data" in data || "errors" in data));
+        (data && typeof data === "object" && ("message" in data || "data" in data || "errors" in data));
 
       if (response.ok) {
         activeApiBase = baseUrl;

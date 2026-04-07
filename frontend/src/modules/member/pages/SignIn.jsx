@@ -131,7 +131,7 @@ function SignIn() {
         {/* Logo */}
         <div className="text-center mb-4">
           <img
-            src="/images/ecom/4steplogo.png"
+            src="/images/4steplogo.png"
             className="mx-auto h-20"
             alt="logo"
           />

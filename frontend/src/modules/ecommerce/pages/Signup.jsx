@@ -175,9 +175,9 @@ function Signup() {
 
                 console.log("Signup Response:", response);
 
-                const generatedMemberId = response.data.data.member_id;
+                // const generatedMemberId = response.data.data.member_id;
 
-                alert(`Sign up successful!\nMember ID: ${generatedMemberId}`);
+                alert(`Sign up successful!`);
 
                 navigate("/login");
 
@@ -469,7 +469,7 @@ function Signup() {
 
                         <div className="mt-4 text-xs sm:text-sm">
                             Already Have an Account?
-                            <Link to="/" className="text-blue-700 ml-2 cursor-pointer">
+                            <Link to="/login" className="text-blue-700 ml-2 cursor-pointer">
                                 Sign In
                             </Link>
                         </div>

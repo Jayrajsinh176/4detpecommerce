@@ -39,6 +39,7 @@ import TravelclubStatus from "./pages/TravelclubStatus";
 import GroupBuiltupBonus from "./pages/GroupBuiltupBonus";
 import Downloads from "./pages/Downloads";
 import Products from "./pages/Products";
+import IncomeReport from "./pages/IncomeReport";
 
 export default function MemberRoutes() {
   return (
@@ -77,6 +78,9 @@ export default function MemberRoutes() {
         <Route path="earning-repurchase" element={<RepurchaseBonus />} />
         <Route path="earning-royalty" element={<RoyaltyClubBonus />} />
         <Route path="earning-branch" element={<BranchTurnoverBonus />} />
+        <Route path="income-report" element={<IncomeReport />} />
+        <Route path="left-downline" element={<RightLeftDownline side="left" />} />
+        <Route path="right-downline" element={<RightLeftDownline side="right" />} />
         <Route
           path="earning-monitoring"
           element={<BusinessMonitoringBonus />}

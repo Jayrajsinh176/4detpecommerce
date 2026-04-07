@@ -19,6 +19,8 @@ use App\Http\Controllers\EarningBalanceController;
 use App\Http\Controllers\RankRewardController;
 use App\Http\Controllers\TravelClubBonusController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\IncomeReportController;
+
 
 
 use App\Http\Controllers\api\MemberControllerecom;
@@ -26,6 +28,7 @@ use App\Http\Controllers\api\ProductController;
 use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\HelpTicketController;
+
 
 Route::post('/help-ticket', [HelpTicketController::class, 'store']);
 Route::get('/help-ticket/{member_id}', [HelpTicketController::class, 'getTickets']);
@@ -109,5 +112,6 @@ Route::post('messages/compose', [MemberMessageController::class, 'compose']);
 Route::get('messages/inbox', [MemberMessageController::class, 'inbox']);
 Route::get('messages/outbox', [MemberMessageController::class, 'outbox']);
 Route::get('/rank-rewards',[RankRewardController::class,'rankRewards']);
+Route::get('/member/income-report', [IncomeReportController::class, 'index']);
 // Route::get('/member/consistency-status', [ConsistencyStatusController::class, 'index']);
 // Route::post('/member/consistency-status/update-monthly-purchase', [ConsistencyStatusController::class, 'updateMonthlyPurchase']);
