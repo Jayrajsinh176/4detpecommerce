@@ -27,6 +27,7 @@ function Checkout() {
         setProducts(products.filter(item => item.id !== id));
       })
       .catch(err => console.log(err));
+      alert("Item removed from cart");
   };
 
   // ✅ Update quantity

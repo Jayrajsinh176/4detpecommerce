@@ -10,7 +10,12 @@ function OrderPage() {
     if (!user) return;
 
     api.get(`/orders/${user.id}`)
-      .then(res => setOrders(res.data))
+      .then(res => {
+        const sortedOrders = res.data.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        setOrders(sortedOrders);
+      })
       .catch(err => console.log(err));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -49,9 +54,14 @@ function OrderPage() {
   const handleCancelOrder = (orderId) => {
     if (window.confirm("Are you sure you want to cancel this order?")) {
       api.put(`/orders/${orderId}/cancel`)
-        .then(res => {
+        .then(() => {
           api.get(`/orders/${user.id}`)
-            .then(res => setOrders(res.data))
+            .then(res => {
+              const sortedOrders = res.data.sort(
+                (a, b) => new Date(b.created_at) - new Date(a.created_at)
+              );
+              setOrders(sortedOrders);
+            })
             .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
@@ -65,7 +75,7 @@ function OrderPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8">
       <div className="max-w-5xl mx-auto">
-        
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -92,17 +102,17 @@ function OrderPage() {
         ) : (
           <div className="space-y-4">
             {orders.map((order, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
               >
                 <div className="p-5 sm:p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    
+
                     {/* Product Image */}
                     <div className="flex-shrink-0">
                       <img
-                    src={order.image}
+                        src={order.image}
                         alt={order.product_name}
                         className="w-full sm:w-28 sm:h-28 h-48 rounded-xl object-cover border border-gray-200"
                       />
@@ -115,9 +125,9 @@ function OrderPage() {
                           <h3 className="font-semibold text-gray-900 text-lg mb-2">
                             {order.product_name}
                           </h3>
-                          
+
                           {/* Status Badge */}
-                          <span 
+                          <span
                             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border capitalize ${statusConfig[order.status]?.color || 'bg-gray-100 text-gray-700'}`}
                           >
                             <span className={`w-1.5 h-1.5 rounded-full ${statusConfig[order.status]?.dotColor}`}></span>
@@ -140,7 +150,7 @@ function OrderPage() {
                           <Package className="w-4 h-4 text-gray-400" />
                           <span>Qty: <span className="font-medium text-gray-900">{order.quantity}</span></span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-gray-400" />
                           <span>{formatDate(order.created_at)}</span>
@@ -150,16 +160,16 @@ function OrderPage() {
                       {/* Action Buttons */}
                       <div className="flex gap-3 mt-4">
                         {order.status === 'pending' && (
-                          <button 
+                          <button
                             onClick={() => handleCancelOrder(order.id)}
                             className="text-sm text-red-600 hover:text-red-700 font-medium"
                           >
                             Cancel Order
                           </button>
                         )}
-                        
+
                         {order.status === 'delivered' && (
-                          <button 
+                          <button
                             onClick={() => handleWriteReview(order.product_id)}
                             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                           >

@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fourstepretail.com/api";
+  import.meta.env.VITE_API_BASE_URL || "https://fourstepretail.com/api" ;
 
 function getStoredMember() {
   try {
@@ -495,7 +495,7 @@ function AddressCard({
             onClick={onEdit}
             className="bg-[#B0422E] hover:bg-[#963925] text-white px-5 py-2 rounded-md text-sm"
           >
-            ? Edit
+             Edit
           </button>
         ) : (
           <div className="flex gap-2">
@@ -616,7 +616,7 @@ function NomineeCard({
             onClick={onEdit}
             className="bg-[#B0422E] hover:bg-[#963925] text-white px-5 py-2 rounded-md text-sm"
           >
-            ? Edit
+             Edit
           </button>
         ) : (
           <div className="flex gap-2">
