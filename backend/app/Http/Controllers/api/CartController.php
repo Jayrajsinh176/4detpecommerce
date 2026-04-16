@@ -89,4 +89,15 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Deleted successfully']);
     }
+
+    public function cartCount($member_id)
+{
+    $count = \DB::table('ecom_cart_items')
+        ->where('member_id', $member_id)
+        ->sum('quantity');
+
+    return response()->json([
+        'count' => $count
+    ]);
+}
 }

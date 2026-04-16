@@ -18,13 +18,15 @@ class OrderecomResource extends Resource
 {
     protected static ?string $model = Orderecom::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Orders';
-protected static ?string $modelLabel = 'Order';
-protected static ?string $pluralModelLabel = 'Orders';  
+    protected static ?string $modelLabel = 'Order';
+    protected static ?string $pluralModelLabel = 'Orders';
+    protected static string|\UnitEnum|null $navigationGroup = 'eCommerce Panel';
+    protected static ?int $navigationSort = 4;
     public static function form(Schema $schema): Schema
     {
         return OrderecomForm::configure($schema);

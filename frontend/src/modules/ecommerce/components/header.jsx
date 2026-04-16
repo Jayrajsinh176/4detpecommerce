@@ -10,20 +10,29 @@ const CATEGORIES = [
 ];
 
 const RESOURCES = [
-    { label: "Media Room",      to: "/mediaroom" },
-    { label: "Core Promoters",  to: "/corepromoters" },
-    { label: "Event Planning",  to: "/event-planning" },
-    { label: "Downloads",       to: "/downloads" },
+    { label: "Media Room", to: "/mediaroom" },
+    { label: "Core Promoters", to: "/corepromoters" },
+    { label: "Event Planning", to: "/" },
+];
+
+const ABOUT_LINKS = [
+    { label: "Company Profile", to: "/aboutus" },
+    { label: "Team Management", to: "/teammanagement" },
+    { label: "Legal Documents", to: "/legaldocument" },
+    { label: "Awards", to: "/awards" },
 ];
 
 function Header() {
-    const [isMenuOpen, setIsMenuOpen]       = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isResourceOpen, setIsResourceOpen] = useState(false);
+    const [isAboutOpen, setIsAboutOpen] = useState(false);
+    const [isMobileAboutOpen, setIsMobileAboutOpen] = useState(false);
 
-    const profileRef  = useRef(null);
+    const profileRef = useRef(null);
     const resourceRef = useRef(null);
-    const location    = useLocation();
+    const aboutRef = useRef(null);
+    const location = useLocation();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -31,6 +40,8 @@ function Header() {
                 setIsProfileOpen(false);
             if (resourceRef.current && !resourceRef.current.contains(e.target))
                 setIsResourceOpen(false);
+            if (aboutRef.current && !aboutRef.current.contains(e.target))
+                setIsAboutOpen(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -38,7 +49,7 @@ function Header() {
 
     useEffect(() => {
         setIsMenuOpen(false);
-        setIsResourceOpen(false);
+
     }, [location.pathname]);
 
     const user = JSON.parse(localStorage.getItem("user"));
@@ -48,7 +59,31 @@ function Header() {
         setIsProfileOpen(false);
         window.location.href = '/';
     };
+    const [cartCount, setCartCount] = useState(0);
 
+
+    const fetchCartCount = async () => {
+        try {
+            if (!user?.id) return;
+
+            const res = await fetch(`http://127.0.0.1:8000/api/cart-count/${user.id}`);
+            const data = await res.json();
+            setCartCount(data.count || 0);
+        } catch (err) {
+            console.error("Cart count error:", err);
+        }
+    };
+    useEffect(() => {
+        fetchCartCount();
+
+        window.addEventListener("cartUpdated", fetchCartCount);
+
+        return () => {
+            window.removeEventListener("cartUpdated", fetchCartCount);
+        };
+    }, []);
+
+    const [activeDropdown, setActiveDropdown] = useState(null);
     return (
         <>
             <header className="sticky top-0 z-50 w-full bg-white" style={{ boxShadow: '0 1px 0 #e5e7eb' }}>
@@ -77,9 +112,11 @@ function Header() {
                             {/* Nav links */}
                             <nav className="flex items-center gap-0.6">
                                 {[
-                                    { to: '/',          label: 'Home' },
+                                    { to: '/', label: 'Home' },
                                     { to: '/allproduct', label: 'Products' },
-                                    { to: '/gallery',   label: 'Gallery' },
+                                      { to: '/opportunity', label: 'Opportunity' },
+                                    { to: '/gallery', label: 'Gallery' },
+                                  
                                 ].map(item => (
                                     <Link
                                         key={item.label}
@@ -90,44 +127,69 @@ function Header() {
                                     </Link>
                                 ))}
 
-                               
-<div className="relative" ref={resourceRef}>
-    <button
-        onClick={() => setIsResourceOpen(!isResourceOpen)}
-        className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap"
-    >
-        Resources
-    </button>
-
-    {isResourceOpen && (
-        <div
-            className="absolute left-0 mt-2 w-52 bg-white rounded-xl py-1 z-50"
-            style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)', border: '1px solid #f0f0f0' }}
-        >
-            {RESOURCES.map((item, i) => (
-                <React.Fragment key={item.to}>
-                    <Link
-                        to={item.to}
-                        onClick={() => setIsResourceOpen(false)}
-                        className="block px-5 py-3 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                    >
-                        {item.label}
-                    </Link>
-                    {i < RESOURCES.length - 1 && (
-                        <div className="mx-4 border-t border-dashed border-gray-100" />
-                    )}
-                </React.Fragment>
-            ))}
-        </div>
-    )}
-</div>
-
-                                <Link
-                                    to="/aboutus"
-                                    className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap"
+                                {/* Resources dropdown */}
+                                <div
+                                    className="relative"
+                                    onMouseEnter={() => setActiveDropdown("resources")}
+                                    onMouseLeave={() => setActiveDropdown(null)}
                                 >
-                                    About Us
-                                </Link>
+                                    <button className="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap">
+                                        Resources
+                                    </button>
+
+                                    {activeDropdown === "resources" && (
+                                        <div
+                                            className="absolute left-0 top-full w-52 bg-white rounded-xl py-1 z-50"
+                                        >
+                                            {RESOURCES.map((item, i) => (
+                                                <React.Fragment key={item.to}>
+                                                    <Link
+                                                        to={item.to}
+                                                        onClick={() => setActiveDropdown(null)}
+                                                        className="block px-5 py-3 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                                                    >
+                                                        {item.label}
+                                                    </Link>
+                                                    {i < RESOURCES.length - 1 && (
+                                                        <div className="mx-4 border-t border-dashed border-gray-100" />
+                                                    )}
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* About Us dropdown */}
+                                <div
+                                    className="relative"
+                                    onMouseEnter={() => setActiveDropdown("about")}
+                                    onMouseLeave={() => setActiveDropdown(null)}
+                                >
+                                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-50 transition-all whitespace-nowrap">
+                                        About Us
+                                    </button>
+
+                                    {activeDropdown === "about" && (
+                                        <div
+                                            className="absolute left-0 top-full w-52 bg-white rounded-xl py-1 z-50"
+                                        >
+                                            {ABOUT_LINKS.map((item, i) => (
+                                                <React.Fragment key={item.to}>
+                                                    <Link
+                                                        to={item.to}
+                                                        onClick={() => setActiveDropdown(null)}
+                                                        className="block px-5 py-3 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                                                    >
+                                                        {item.label}
+                                                    </Link>
+                                                    {i < ABOUT_LINKS.length - 1 && (
+                                                        <div className="mx-4 border-t border-dashed border-gray-100" />
+                                                    )}
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </nav>
 
                             {/* Push right */}
@@ -164,9 +226,15 @@ function Header() {
                             {/* Cart */}
                             <Link
                                 to="/checkout"
-                                className="flex items-center justify-center w-9 h-9 rounded-full text-[22px] text-gray-700 hover:bg-gray-100 transition-all"
+                                className="relative flex items-center justify-center w-9 h-9 rounded-full text-[22px] text-gray-700 hover:bg-gray-100 transition-all"
                             >
                                 <RiShoppingBagLine />
+
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-2 py-[1.5px] rounded-full">
+                                        {cartCount}
+                                    </span>
+                                )}
                             </Link>
 
                             {/* Profile dropdown */}
@@ -197,7 +265,7 @@ function Header() {
                                                 <div className="py-1">
                                                     {[
                                                         { to: '/profile', icon: <FaUser />, label: 'My Profile' },
-                                                        { to: '/orders',  icon: <FaBox />,  label: 'My Orders' },
+                                                        { to: '/orders', icon: <FaBox />, label: 'My Orders' },
                                                     ].map(item => (
                                                         <Link
                                                             key={item.to}
@@ -223,7 +291,7 @@ function Header() {
                                             <div className="px-4 py-3">
                                                 <p className="text-sm text-gray-500 mb-3">Sign in to access your account</p>
                                                 <Link
-                                                    to="/"
+                                                    to="/login"
                                                     onClick={() => setIsProfileOpen(false)}
                                                     className="block w-full text-center py-2 rounded-lg text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-colors"
                                                 >
@@ -264,8 +332,17 @@ function Header() {
                             <img src="/images/4steplogo.png" alt="4step" className="h-9 w-auto" />
                         </Link>
                         <div className="flex items-center gap-1">
-                            <Link to="/checkout" className="flex items-center justify-center w-9 h-9 rounded-full text-xl text-gray-700 hover:bg-gray-100">
+                            <Link
+                                to="/checkout"
+                                className="relative flex items-center justify-center w-9 h-9 rounded-full text-[22px] text-gray-700 hover:bg-gray-100 transition-all"
+                            >
                                 <RiShoppingBagLine />
+
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] px-2 py-[1.5px] rounded-full">
+                                        {cartCount}
+                                    </span>
+                                )}
                             </Link>
                             <button
                                 className="flex items-center justify-center w-9 h-9 rounded-full text-2xl text-gray-700 hover:bg-gray-100"
@@ -298,16 +375,17 @@ function Header() {
                                     </div>
                                 ) : (
                                     <div className="flex gap-2 py-2 mb-1">
-                                        <Link to="/login"  className="flex-1 text-center py-2 rounded-xl bg-gray-900 text-white font-semibold text-sm">Sign In</Link>
+                                        <Link to="/login" className="flex-1 text-center py-2 rounded-xl bg-gray-900 text-white font-semibold text-sm">Sign In</Link>
                                         <Link to="/signup" className="flex-1 text-center py-2 rounded-xl border border-gray-900 text-gray-900 font-semibold text-sm">Register</Link>
                                     </div>
                                 )}
 
                                 <div className="h-px bg-gray-100 my-1" />
                                 {[
-                                    { to: '/home',       label: 'Home' },
-                                    { to: '/allproduct', label: 'All Products' },
-                                    { to: '/helpform',   label: 'Contact' },
+                                    { to: '/home', label: 'Home' },
+                                    { to: '/allproduct', label: ' Products' },
+                                    { to: '/helpform', label: 'Contact' },
+
                                 ].map(item => (
                                     <Link key={item.to} to={item.to} className="py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors font-medium">{item.label}</Link>
                                 ))}
@@ -316,6 +394,13 @@ function Header() {
                                 <div className="h-px bg-gray-100 my-1" />
                                 <p className="text-xs text-gray-400 px-3 pt-1 pb-0.5 uppercase tracking-wider">Resources</p>
                                 {RESOURCES.map(item => (
+                                    <Link key={item.to} to={item.to} className="py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors text-gray-600">{item.label}</Link>
+                                ))}
+
+                                {/* Mobile About Us (collapsible) */}
+                                <div className="h-px bg-gray-100 my-1" />
+                                <p className="text-xs text-gray-400 px-3 pt-1 pb-0.5 uppercase tracking-wider">Resources</p>
+                                {ABOUT_LINKS.map(item => (
                                     <Link key={item.to} to={item.to} className="py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors text-gray-600">{item.label}</Link>
                                 ))}
 
@@ -329,8 +414,8 @@ function Header() {
                                     <>
                                         <div className="h-px bg-gray-100 my-1" />
                                         {[
-                                            { to: '/profile',     icon: <FaUser />,  label: 'My Profile' },
-                                            { to: '/orders',      icon: <FaBox />,   label: 'My Orders' },
+                                            { to: '/profile', icon: <FaUser />, label: 'My Profile' },
+                                            { to: '/orders', icon: <FaBox />, label: 'My Orders' },
                                             { to: '/track-order', icon: <FaTruck />, label: 'Track Order' },
                                         ].map(item => (
                                             <Link key={item.to} to={item.to} className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 transition-colors">

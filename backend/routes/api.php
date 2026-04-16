@@ -29,10 +29,29 @@ use App\Http\Controllers\api\OrderController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\HelpTicketController;
 
+use App\Models\Member;
+
+Route::post('/member-auto-login', function (Request $request) {
+
+    $member = Member::find($request->id);
+
+    if (!$member) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    return response()->json([
+        'id' => $member->id,
+        'user_id' => $member->user_id,   // 🔥 MUST ADD
+        'fullname' => $member->fullname
+    ]);
+});
+
+
 
 Route::post('/help-ticket', [HelpTicketController::class, 'store']);
 Route::get('/help-ticket/{member_id}', [HelpTicketController::class, 'getTickets']);
 // API routes for  ecommerce member operations (stateless, no CSRF)
+Route::get('/cart-count/{member_id}', [CartController::class, 'cartCount']);
 Route::post('/add-to-cart', [CartController::class, 'addToCart']);
 Route::get('/cart/{member_id}', [CartController::class, 'getCart']);
 Route::put('/cart/{id}', [CartController::class, 'updateQuantity']);
@@ -60,6 +79,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 // API routes for member operations (stateless, no CSRF)
+Route::get('/admin/tree', [MemberController::class, 'adminTree']);
 Route::post('member/signup', [MemberController::class, 'signup']);
 Route::post('member/signin', [MemberController::class, 'signin']);
 Route::post('member/check-sponsor', [MemberController::class, 'checkSponsor']);
@@ -113,5 +133,8 @@ Route::get('messages/inbox', [MemberMessageController::class, 'inbox']);
 Route::get('messages/outbox', [MemberMessageController::class, 'outbox']);
 Route::get('/rank-rewards',[RankRewardController::class,'rankRewards']);
 Route::get('/member/income-report', [IncomeReportController::class, 'index']);
+
+;
+
 // Route::get('/member/consistency-status', [ConsistencyStatusController::class, 'index']);
 // Route::post('/member/consistency-status/update-monthly-purchase', [ConsistencyStatusController::class, 'updateMonthlyPurchase']);

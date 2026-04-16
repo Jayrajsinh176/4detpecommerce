@@ -40,6 +40,8 @@ import GroupBuiltupBonus from "./pages/GroupBuiltupBonus";
 import Downloads from "./pages/Downloads";
 import Products from "./pages/Products";
 import IncomeReport from "./pages/IncomeReport";
+import AutoLogin from "./pages/autologin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function MemberRoutes() {
   return (
@@ -47,9 +49,16 @@ export default function MemberRoutes() {
       {/* public auth pages */}
       <Route path="/member/signin" element={<SignIn />} />
       <Route path="/member/signup" element={<SignUp />} />
-
+    <Route path="/member/auto-login/:id" element={<AutoLogin />} />
       {/* protected member area under layout */}
-      <Route path="/member" element={<MemberLayout />}>
+     <Route
+  path="/member"
+  element={
+    <ProtectedRoute>
+      <MemberLayout />
+    </ProtectedRoute>
+  }
+>
         <Route index element={<Navigate to="dashboard" />} />
 
         <Route path="dashboard" element={<Dashboard />} />
@@ -97,6 +106,7 @@ export default function MemberRoutes() {
         <Route path="compose" element={<Compose />} />
         <Route path="downloads" element={<Downloads />} />
         <Route path="products" element={<Products />} />
+   
       </Route>
     </>
   );

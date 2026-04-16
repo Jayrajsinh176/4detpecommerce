@@ -552,15 +552,20 @@ class MemberController extends Controller
         ]);
     }
     public function matchingStatus(Request $request)
-    {
-        $userId = 1; // TODO: replace with authenticated member ID
-
-        $history = \App\Models\MatchingHistory::where('user_id', $userId)
-            ->orderBy('match_date', 'desc')
-            ->get();
-
-        return response()->json($history);
+{
+    // ❌ BEFORE: $userId = 1;
+    // ✅ AFTER:
+    $member = $this->getMemberFromHeader($request);
+    if (!$member) {
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
+
+    $history = \App\Models\MatchingHistory::where('user_id', $member->id)
+        ->orderBy('match_date', 'desc')
+        ->get();
+
+    return response()->json($history);
+}
     private function findMemberByUserId(string $userId): ?Member
     {
         return Member::where('user_id', $userId)->first();
@@ -962,4 +967,20 @@ class MemberController extends Controller
             $query->where('user_id', $userId);
         }
     }
+    public function adminTree(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|string'
+    ]);
+
+    $member = \App\Models\Member::where('user_id', $request->user_id)->first();
+
+    if (!$member) {
+        return response()->json(['message' => 'Member not found'], 404);
+    }
+
+    return response()->json([
+        'tree' => $this->buildTree($member->id, 4)
+    ]);
+}
 }

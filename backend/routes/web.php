@@ -15,3 +15,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // any web routes remain here; member API routes moved to routes/api.php to avoid CSRF errors
+
+
+
+Route::get('/admin-login-member/{id}', function ($id) {
+
+    return redirect()->away("http://localhost:5173/member/auto-login/$id");
+
+})->name('admin.login.member');

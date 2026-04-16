@@ -18,9 +18,12 @@ class HelpTicketResource extends Resource
 {
     protected static ?string $model = HelpTicket::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+      protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
     protected static ?string $recordTitleAttribute = 'subject';
+    protected static string|\UnitEnum|null $navigationGroup = 'eCommerce Panel';
+    protected static ?int $navigationSort = 5;
+
 
     public static function form(Schema $schema): Schema
     {
@@ -29,7 +32,7 @@ class HelpTicketResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return HelpTicketsTable::table($table); 
+        return HelpTicketsTable::table($table);
     }
 
     public static function getRelations(): array
@@ -38,12 +41,16 @@ class HelpTicketResource extends Resource
             //
         ];
     }
+    public static function canCreate(): bool
+{
+    return false;
+}
 
     public static function getPages(): array
     {
         return [
             'index' => ListHelpTickets::route('/'),
-            'create' => CreateHelpTicket::route('/create'),
+          
             'edit' => EditHelpTicket::route('/{record}/edit'),
         ];
     }

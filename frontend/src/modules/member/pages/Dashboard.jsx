@@ -102,10 +102,10 @@ function getStepFromPackageId(packageId) {
 function getMemberStep(member) {
   return toNumber(
     member?.selected_package_step ??
-      member?.package_step ??
-      member?.step_level ??
-      member?.current_step ??
-      getStepFromPackageId(member?.selected_package_id)
+    member?.package_step ??
+    member?.step_level ??
+    member?.current_step ??
+    getStepFromPackageId(member?.selected_package_id)
   );
 }
 
@@ -243,7 +243,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState(DEFAULT_STATS);
   const [countdown, setCountdown] = useState("");
 
-  const memberUserId = memberData?.user_id || "";
+  const memberUserId = localStorage.getItem("member_user_id") || "";
   const welcomeName = memberData?.fullname || memberUserId || "Member";
   const customerId = memberUserId ? `MLM-${memberUserId}` : "MLM-00000";
 
@@ -263,45 +263,63 @@ export default function Dashboard() {
     return Date.now() + ACTIVATION_WINDOW_MS;
   }
 
-  useEffect(() => {
-    if (!memberUserId) return;
+ useEffect(() => {
+  const userId = localStorage.getItem("member_user_id");
+  if (!userId) return;
 
-    const fetchDashboardData = async () => {
-      try {
-        const res = await requestMemberApi("/member/dashboard", {
-          headers: { "X-Auth-Member": memberUserId },
-        });
+  const loadStats = async () => {
+    try {
+      const res = await requestMemberApi("/member/dashboard-stats", {
+        headers: { "X-Auth-Member": userId },
+      });
 
-        if (!res?.ok) return;
+      if (!res?.ok) return;
 
-        const data = res.data || {};
+      const data = res?.data?.data || {};
 
-        const updatedMember = {
-          ...memberData,
-          ...data,
-          selected_package_id:
-            data.selected_package_id ?? memberData?.selected_package_id,
-          selected_package_step:
-            data.selected_package_step ?? memberData?.selected_package_step,
-          package_step: data.package_step ?? memberData?.package_step,
-          step_level: data.step_level ?? memberData?.step_level,
-          current_step: data.current_step ?? memberData?.current_step,
-          status: data.status ?? memberData?.status,
-          activation_date: data.activation_date ?? memberData?.activation_date,
-          created_at: data.created_at ?? memberData?.created_at,
-          fullname: data.fullname ?? memberData?.fullname,
-          user_id: data.user_id ?? memberData?.user_id,
-        };
+      const newStats = {
+        total_team: toNumber(data.total_team),
+        total_register_team: toNumber(
+          data.total_register_team ?? data.total_team
+        ),
+        total_active_team: toNumber(data.total_active_team),
+        total_manager_left: toNumber(data.total_manager_left),
+        total_manager_right: toNumber(data.total_manager_right),
+        id_position_step: toNumber(
+          data.id_position_step ||
+          data.package_step ||
+          data.step_level ||
+          data.current_step
+        ),
+        leadership_rank: data.leadership_rank || "N/A",
+        rank_with_reward: data.rank_with_reward || "N/A",
+        repurchase_balance: toNumber(data.repurchase_balance),
+        consistency_balance: toNumber(data.consistency_balance),
+        earning_balance: toNumber(data.earning_balance),
+        daily_earn: toNumber(data.daily_earn),
+        direct_id: toNumber(data.direct_id),
+        direct_branch: toNumber(data.direct_branch),
+      };
 
-        setMemberData(updatedMember);
-        saveMemberData(updatedMember);
-      } catch (error) {
-        console.error("Dashboard member data fetch error:", error);
-      }
-    };
+      // ✅ prevent unnecessary re-render
+      setStats((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(newStats)) {
+          return newStats;
+        }
+        return prev;
+      });
 
-    fetchDashboardData();
-  }, [memberUserId]);
+    } catch (error) {
+      console.error("Stats error:", error);
+    }
+  };
+
+  loadStats();
+
+  const interval = setInterval(loadStats, 30000);
+
+  return () => clearInterval(interval);
+}, []); // ✅ IMPORTANT
 
   useEffect(() => {
     if (!memberUserId) return;
@@ -326,49 +344,34 @@ export default function Dashboard() {
   useEffect(() => {
     if (!memberUserId) return;
 
-    const loadStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const res = await requestMemberApi("/member/dashboard-stats", {
+        const res = await requestMemberApi("/member/dashboard", {
           headers: { "X-Auth-Member": memberUserId },
         });
 
         if (!res?.ok) return;
 
-        const data = res?.data?.data || {};
+        const data = res.data || {};
 
-        setStats({
-          total_team: toNumber(data.total_team),
-          total_register_team: toNumber(
-            data.total_register_team ?? data.total_team
-          ),
-          total_active_team: toNumber(data.total_active_team),
-          total_manager_left: toNumber(data.total_manager_left),
-          total_manager_right: toNumber(data.total_manager_right),
-          id_position_step: toNumber(
-            data.id_position_step ||
-              data.package_step ||
-              data.step_level ||
-              data.current_step
-          ),
-          leadership_rank: data.leadership_rank || "N/A",
-          rank_with_reward: data.rank_with_reward || "N/A",
-          repurchase_balance: toNumber(data.repurchase_balance),
-          consistency_balance: toNumber(data.consistency_balance),
-          earning_balance: toNumber(data.earning_balance),
-          daily_earn: toNumber(data.daily_earn),
-          direct_id: toNumber(data.direct_id),
-          direct_branch: toNumber(data.direct_branch),
+        // ✅ ONLY UPDATE IF NEEDED (prevents loop)
+        setMemberData((prev) => {
+          const updated = { ...prev, ...data };
+
+          if (JSON.stringify(prev) !== JSON.stringify(updated)) {
+            return updated;
+          }
+
+          return prev;
         });
-      } catch (error) {
-        console.error("Dashboard stats fetch error:", error);
+
+      } catch (err) {
+        console.error(err);
       }
     };
 
-    loadStats();
-    const interval = setInterval(loadStats, 30000);
-
-    return () => clearInterval(interval);
-  }, [memberUserId]);
+    fetchDashboardData();
+  }, []); // ✅ IMPORTANT
 
   const signupBaseUrl = `${window.location.origin}/member/signup`;
   const leftReferralLink = `${signupBaseUrl}?sponsorId=${memberUserId}&position=left`;

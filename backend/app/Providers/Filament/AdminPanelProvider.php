@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 
+
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 
@@ -32,27 +33,30 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandLogo(asset('storage/4steplogo.png'))
-             ->darkMode(false)
-->brandLogoHeight('60px')
+            ->darkMode(false)
+            ->brandLogoHeight('60px')
             ->colors([
                 'primary' => Color::Amber,
-                
+
             ])
-          
 
-->renderHook(
-    'panels::head.end',
-    fn () => '<link rel="stylesheet" href="' . asset('css/filament/filament/app.css') . '?v=' . time() . '">'
-)
 
-          
+            ->renderHook(
+                'panels::head.end',
+                fn() => '<link rel="stylesheet" href="' . asset('css/filament/filament/app.css') . '?v=' . time() . '">'
+            )
+            ->renderHook(
+                'panels::sidebar.footer',
+                fn() => view('filament.logout')
+            )
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
             ])
             // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            
+
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

@@ -25,5 +25,6 @@ class MyKyc extends Model
         'transaction_password_hash',
         'transaction_password_status',
         'transaction_password_checked_at',
+        'status',
     ];
 }

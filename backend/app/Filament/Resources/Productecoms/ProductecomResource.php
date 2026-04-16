@@ -18,12 +18,14 @@ class ProductecomResource extends Resource
 {
     protected static ?string $model = Productecom::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Products';
     protected static ?string $modelLabel = 'Product';
     protected static ?string $pluralModelLabel = 'Products';
+    protected static string|\UnitEnum|null $navigationGroup = 'eCommerce Panel';
+protected static ?int $navigationSort = 2;
     public static function form(Schema $schema): Schema
     {
         return ProductecomForm::configure($schema);

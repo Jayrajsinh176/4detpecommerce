@@ -86,7 +86,7 @@ function AboutUs() {
     <div className="overflow-x-hidden">
 
       {/* ── HERO ── */}
-      <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-20 md:py-28 px-6 text-center relative overflow-hidden">
+      <section className="bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-20 md:py-28 px-6 text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: "radial-gradient(circle at 20% 50%, #ef4444 0%, transparent 50%), radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 50%)" }}
         />
@@ -141,7 +141,7 @@ function AboutUs() {
       </section>
 
       {/* ── STATS ── */}
-      <section className="bg-gray-900 py-14 md:py-20">
+      <section className="bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 py-14 md:py-20">
         <div className="max-w-screen-xl mx-auto px-4 md:px-6">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-white">
@@ -155,7 +155,7 @@ function AboutUs() {
             {stats.map((s) => (
               <div
                 key={s.label}
-                className="bg-gray-800 rounded-2xl p-5 md:p-7 text-center border border-gray-700 hover:border-red-500 transition-colors"
+                className="bg-gray-900 rounded-2xl p-5 md:p-7 text-center  border border-gray-700 hover:border-orange-500 transition-colors"
               >
                 <div className="text-3xl md:text-4xl mb-3">{s.icon}</div>
                 <div className="text-2xl md:text-3xl font-extrabold text-red-400 mb-1">{s.number}</div>

@@ -67,4 +67,10 @@ class Member extends Authenticatable
 
         return $candidate;
     }
+    public function sponsor()
+{
+    return $this->belongsTo(Member::class, 'sponsor_id');
 }
+
+}
+

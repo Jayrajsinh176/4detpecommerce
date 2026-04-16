@@ -16,6 +16,8 @@ class ProductecomsTable
     {
         return $table
             ->columns([
+                TextColumn::make('category.name')
+                    ->label('Category'),
                 TextColumn::make('brand')
                     ->searchable(),
                 TextColumn::make('name')
@@ -35,9 +37,13 @@ class ProductecomsTable
                     ->badge()
                     ->color(fn($state) => $state > 0 ? 'success' : 'gray'),
                 ImageColumn::make('image')
-                    ->disk('public'),
-                TextColumn::make('category.name')
-                    ->label('Category'),
+                    
+                    ->disk('public')
+                    ->height(80)
+                    ->width(80),
+                TextColumn::make('description')
+                    ->limit(50),
+
                 IconColumn::make('is_viral')
                     ->boolean(),
                 TextColumn::make('created_at')
@@ -48,9 +54,7 @@ class ProductecomsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
+
             ])
             ->filters([
                 //

@@ -15,6 +15,7 @@ import {
   FaVenusMars,
 } from "react-icons/fa";
 
+
 // Create axios instance with base URL
 const api = axios.create({
   baseURL: "https://fourstepretail.com/api/",
@@ -113,54 +114,76 @@ function ProfilePage() {
 
   // Handle form submission with axios
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validate()) return;
+    if (!validate()) return;
 
-  setIsLoading(true);
+    if (!user?.id) {
+      alert("User not found. Please login again.");
+      return;
+    }
 
-  try {
-    const nameParts = formData.fullname.trim().split(" ");
+    // 🔥 PREVENT EMPTY VALUES
+    if (!formData.fullname || !formData.mobile_no || !formData.pin_code) {
+      alert("Please fill all required fields");
+      return;
+    }
 
-    const response = await api.put(`/members/${user.id}`, {
-      firstName: nameParts[0] || "",
-      lastName: nameParts.slice(1).join(" ") || nameParts[0] || "",
-      email: formData.email,
-      mobileNo: formData.mobile_no,
-      address: formData.address,
-      city: formData.city,
-      state: formData.state,
-      pinCode: formData.pin_code,
-      dob: formData.dob,
-      gender: formData.gender,
-    });
+    setIsLoading(true);
 
-    console.log("SUCCESS:", response.data);
+    try {
+      const response = await api.put(`/members/${user.id}`, {
+  fullname: formData.fullname,
+  email: formData.email,
+  mobile_no: formData.mobile_no,
+  address: formData.address,
+  city: formData.city,
+  state: formData.state,
+  pin_code: formData.pin_code,
+  dob: formData.dob,
+  gender: formData.gender,
+});
+      const updatedUser = response.data.data;
 
-    const updatedUser = response.data.data;
+      // 🔥 SAVE TO LOCAL
+      localStorage.setItem("user", JSON.stringify(updatedUser));
 
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
+      // 🔥 UPDATE STATE
+      setUser(updatedUser);
 
-    setIsEditing(false);
+      // 🔥 VERY IMPORTANT (PUT HERE)
+      setFormData({
+        fullname: updatedUser.fullname || "",
+        email: updatedUser.email || "",
+        mobile_no: updatedUser.mobile_no || "",
+        address: updatedUser.address || "",
+        city: updatedUser.city || "",
+        state: updatedUser.state || "",
+        pin_code: updatedUser.pin_code || "",
+        dob: updatedUser.dob || "",
+        gender: updatedUser.gender || "",
+      });
 
-    setMessage({
-      type: "success",
-      text: "Profile updated successfully!",
-    });
+      // 🔥 CLOSE EDIT MODE
+      setIsEditing(false);
 
-  } catch (error) {
-    console.log("ERROR FULL:", error.response?.data);
+      setMessage({
+        type: "success",
+        text: "Profile updated successfully!",
+      });
 
-    setMessage({
-      type: "error",
-      text: error.response?.data?.message || "Update failed",
-    });
+    } catch (error) {
+      console.log("ERROR FULL:", error.response?.data);
 
-  } finally {
-    setIsLoading(false);
-  }
-};
+      setMessage({
+        type: "error",
+        text: error.response?.data?.message || "Update failed",
+      });
+
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Cancel editing & reset form
   const handleCancel = () => {
@@ -186,11 +209,11 @@ function ProfilePage() {
   const getInitials = (name) => {
     return name
       ? name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2)
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
       : "U";
   };
 
@@ -252,11 +275,10 @@ function ProfilePage() {
         {/* Success/Error Message */}
         {message.text && (
           <div
-            className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg flex items-start gap-2 sm:gap-3 animate-slideDown text-sm sm:text-base ${
-              message.type === "success"
-                ? "bg-green-50 text-green-700 border border-green-200"
-                : "bg-red-50 text-red-700 border border-red-200"
-            }`}
+            className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg flex items-start gap-2 sm:gap-3 animate-slideDown text-sm sm:text-base ${message.type === "success"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : "bg-red-50 text-red-700 border border-red-200"
+              }`}
           >
             <div className="flex-shrink-0 mt-0.5">
               {message.type === "success" ? (
@@ -310,14 +332,13 @@ function ProfilePage() {
                 <input
                   type="text"
                   name="fullname"
-                  value={formData.fullname}
+                  value={formData.fullname || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.fullname
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.fullname
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                 />
                 {errors.fullname && (
                   <p className="mt-1 text-xs text-red-500">{errors.fullname}</p>
@@ -333,14 +354,13 @@ function ProfilePage() {
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={formData.email || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.email
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.email
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                 />
                 {errors.email && (
                   <p className="mt-1 text-xs text-red-500">{errors.email}</p>
@@ -356,15 +376,14 @@ function ProfilePage() {
                 <input
                   type="tel"
                   name="mobile_no"
-                  value={formData.mobile_no}
+                  value={formData.mobile_no || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
                   maxLength="10"
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.mobile_no
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.mobile_no
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                   placeholder="10 digit mobile number"
                 />
                 {errors.mobile_no && (
@@ -383,14 +402,13 @@ function ProfilePage() {
                 <input
                   type="date"
                   name="dob"
-                  value={formData.dob}
+                  value={formData.dob || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.dob
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.dob
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                 />
                 {errors.dob && (
                   <p className="mt-1 text-xs text-red-500">{errors.dob}</p>
@@ -405,14 +423,13 @@ function ProfilePage() {
                 </label>
                 <select
                   name="gender"
-                  value={formData.gender}
+                  value={formData.gender || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.gender
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.gender
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                 >
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
@@ -432,15 +449,14 @@ function ProfilePage() {
                 </label>
                 <textarea
                   name="address"
-                  value={formData.address}
+                  value={formData.address || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
                   rows="3"
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.address
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all resize-none`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.address
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all resize-none`}
                 />
                 {errors.address && (
                   <p className="mt-1 text-xs text-red-500">{errors.address}</p>
@@ -455,14 +471,13 @@ function ProfilePage() {
                 <input
                   type="text"
                   name="city"
-                  value={formData.city}
+                  value={formData.city || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.city
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.city
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                 />
                 {errors.city && (
                   <p className="mt-1 text-xs text-red-500">{errors.city}</p>
@@ -477,14 +492,13 @@ function ProfilePage() {
                 <input
                   type="text"
                   name="state"
-                  value={formData.state}
+                  value={formData.state || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.state
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.state
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                 />
                 {errors.state && (
                   <p className="mt-1 text-xs text-red-500">{errors.state}</p>
@@ -499,15 +513,14 @@ function ProfilePage() {
                 <input
                   type="text"
                   name="pin_code"
-                  value={formData.pin_code}
+                  value={formData.pin_code || ""}
                   onChange={handleChange}
                   disabled={!isEditing}
                   maxLength="6"
-                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${
-                    errors.pin_code
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
+                  className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg border ${errors.pin_code
+                    ? "border-red-300 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                    } ${isEditing ? "bg-white" : "bg-gray-50"} focus:outline-none focus:ring-2 transition-all`}
                   placeholder="6 digit PIN code"
                 />
                 {errors.pin_code && (

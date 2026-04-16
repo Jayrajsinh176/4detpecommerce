@@ -23,39 +23,50 @@ import Mediaroom from './pages/mediaroom'
 import Aboutus from './pages/aboutus'
 import Gallery from './pages/gallery'
 import Corepromoter from './pages/corepromoters'
-
+import Legaldocument from './pages/legaldocumnet'
+import Awards from './pages/awards'
+import Teammanagement from './components/teammanagement'
+import Opportunity from "./pages/opportunity";
 
 
 export default function EcommerceRoutes() {
   return (
     <Route path="/" element={<EcommerceLayout />}>
-  <Route index element={<Home />} />
-  <Route path="login" element={<LoginPage />} />
-  <Route path="signup" element={<Signup />} />
-  <Route path="home" element={<Home />} />
-  <Route path="allproduct" element={<AllProduct />} />
-  <Route path="product" element={<Product />} />
-  <Route path="product/:id" element={<Product />} />
-  <Route path="helpform" element={<Helpform />} />
-  <Route path="checkout" element={<Checkout />} />
-  <Route path="checkoutfinal" element={<CheckoutFinal />} />
+      <Route index element={<Home />} />
+      <Route path="login" element={<LoginPage />} />
+      <Route path="signup" element={<Signup />} />
+      <Route path="home" element={<Home />} />
+      <Route path="allproduct" element={<AllProduct />} />
+      <Route path="product" element={<Product />} />
+      <Route path="product/:id" element={<Product />} />
+      <Route path="helpform" element={<Helpform />} />
+      <Route path="checkout" element={<Checkout />} />
+      <Route path="checkoutfinal" element={<CheckoutFinal />} />
 
-  <Route path="terms" element={<Terms />} />
-  <Route path="returnpolicy" element={<ReturnPolicy />} />
-  <Route path="compliancepolicy" element={<CompliancePolicy />} />
-  <Route path="privacypolicy" element={<PrivacyPolicy />} />
-  <Route path="shippingpolicy" element={<ShippingPolicy />} />
-  <Route path="profile" element={<ProfilePage />} />
-  <Route path="category/:id" element={<CategoryProducts />} />
-  <Route path="orders" element={<Orders />} />
-  <Route path="trackorder" element={<Trackorder />} />
-  <Route path="sellerdisclaimer" element={<DisclaimerPolicy />} />
-  <Route path="mediaroom" element={<Mediaroom />} />
-  <Route path="aboutus" element={<Aboutus />} />
-  <Route path="gallery" element={<Gallery />} />
-  <Route path="corepromoters" element={<Corepromoter />} />
-  
+      <Route path="terms" element={<Terms />} />
+      <Route path="returnpolicy" element={<ReturnPolicy />} />
+      <Route path="compliancepolicy" element={<CompliancePolicy />} />
+      <Route path="privacypolicy" element={<PrivacyPolicy />} />
+      <Route path="shippingpolicy" element={<ShippingPolicy />} />
+      <Route path="profile" element={<ProfilePage />} />
+      <Route path="category/:id" element={<CategoryProducts />} />
+      <Route path="orders" element={<Orders />} />
+      <Route path="trackorder" element={<Trackorder />} />
+      <Route path="sellerdisclaimer" element={<DisclaimerPolicy />} />
+   
 
-</Route>
+      <Route path="gallery" element={<Gallery />} />
+      
+      <Route path="mediaroom" element={<Mediaroom />} />
+      <Route path="corepromoters" element={<Corepromoter />} />
+
+      <Route path="aboutus" element={<Aboutus />} />
+      <Route path="teammanagement" element={<Teammanagement />} />
+      <Route path="legaldocument" element={<Legaldocument />} />
+      <Route path="awards" element={<Awards />} />
+      <Route path="opportunity" element={<Opportunity />} />
+
+
+    </Route>
   );
 }

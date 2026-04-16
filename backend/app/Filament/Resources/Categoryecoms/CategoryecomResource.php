@@ -23,8 +23,10 @@ class CategoryecomResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationLabel = 'Categories';
-protected static ?string $modelLabel = 'Category';
-protected static ?string $pluralModelLabel = 'Categories';
+    protected static ?string $modelLabel = 'Category';
+    protected static ?string $pluralModelLabel = 'Categories';
+    protected static string|\UnitEnum|null $navigationGroup = 'eCommerce Panel';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {
@@ -51,5 +53,5 @@ protected static ?string $pluralModelLabel = 'Categories';
             'edit' => EditCategoryecom::route('/{record}/edit'),
         ];
     }
-   
+
 }

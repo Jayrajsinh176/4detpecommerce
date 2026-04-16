@@ -18,13 +18,20 @@ class MemberecomResource extends Resource
 {
     protected static ?string $model = Memberecom::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationLabel = 'Members';
-    protected static ?string $pluralModelLabel = 'Members';
-    protected static ?string $modelLabel = 'Member';
+    // ✅ CHANGE LABEL (IMPORTANT)
+    protected static ?string $navigationLabel = 'Customers';
+    protected static ?string $pluralModelLabel = 'Customers';
+    protected static ?string $modelLabel = 'Customer';
+
+    // ✅ GROUP (eCommerce)
+    protected static string|\UnitEnum|null $navigationGroup = 'eCommerce Panel';
+
+    // ✅ ORDER (1st in eCommerce)
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

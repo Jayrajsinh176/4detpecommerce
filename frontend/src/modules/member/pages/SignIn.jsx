@@ -113,7 +113,12 @@ function SignIn() {
       }
 
       localStorage.setItem("memberSession", "true");
-      localStorage.setItem("memberData", JSON.stringify(data.member || {}));
+
+// 🔥 IMPORTANT
+localStorage.setItem("member_user_id", data.member.user_id);
+
+// optional
+localStorage.setItem("memberData", JSON.stringify(data.member || {}));
       alert("Login Successful ✅");
       navigate("/member/dashboard");
     } catch (error) {

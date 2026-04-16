@@ -68,45 +68,37 @@ class MemberControllerecom extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $member = Memberecom::findOrFail($id);
+{
+    $member = Memberecom::findOrFail($id);
 
-        $request->validate([
-            'fullname' => 'required|string|max:255',
-            'dob' => 'required|date',
-            'gender' => 'required|in:Male,Female,Other',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('ecom_members', 'email')->ignore($member->id)
-            ],
-            'mobile_no' => [
-                'required',
-                'digits:10',
-                Rule::unique('ecom_members', 'mobile_no')->ignore($member->id)
-            ],
-            'address' => 'required|string',
-            'pin_code' => 'required|digits:6',
-            'state' => 'required|string',
-            'city' => 'required|string',
-        ]);
+    $request->validate([
+        'fullname' => 'required|string|max:255',
+        'dob' => 'required|date',
+        'gender' => 'required|in:Male,Female,Other',
+        'email' => 'required|email|unique:ecom_members,email,' . $member->id,
+        'mobile_no' => 'required|digits:10|unique:ecom_members,mobile_no,' . $member->id,
+        'address' => 'required|string',
+        'pin_code' => 'required|digits:6',
+        'state' => 'required|string',
+        'city' => 'required|string',
+    ]);
 
-        $member->fullname = $request->firstName . ' ' . $request->lastName;
-        $member->dob = $request->dob;
-        $member->gender = $request->gender;
-        $member->email = $request->email;
-        $member->mobile_no = $request->mobileNo;
-        $member->address = $request->address;
-        $member->pin_code = $request->pinCode;
-        $member->state = $request->state;
-        $member->city = $request->city;
+    $member->update([
+        'fullname' => $request->fullname,
+        'dob' => $request->dob,
+        'gender' => $request->gender,
+        'email' => $request->email,
+        'mobile_no' => $request->mobile_no,
+        'address' => $request->address,
+        'pin_code' => $request->pin_code,
+        'state' => $request->state,
+        'city' => $request->city,
+    ]);
 
-        $member->save(); // 🔥 THIS IS THE FIX
-        $member->refresh();
-
-        return response()->json([
-            'message' => 'Profile updated successfully',
-            'data' => $member
-        ], 200);
-    }
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'data' => $member
+    ]);
+}
+    
 }

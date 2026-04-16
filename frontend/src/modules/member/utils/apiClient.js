@@ -1,7 +1,8 @@
 const ENV_BASE = (import.meta.env.VITE_API_BASE_URL || "").trim();
 
 const getFallbackBaseUrls = () => {
-  const browserHost = typeof window !== "undefined" ? window.location.hostname : "127.0.0.1";
+  const browserHost =
+    typeof window !== "undefined" ? window.location.hostname : "127.0.0.1";
 
   const candidates = [
     ENV_BASE,
@@ -18,11 +19,30 @@ const getFallbackBaseUrls = () => {
 let activeApiBase = null;
 
 export async function requestMemberApi(pathWithQuery, options = {}) {
-  const path = pathWithQuery.startsWith("/") ? pathWithQuery : `/${pathWithQuery}`;
-  const fallbackBaseUrls = getFallbackBaseUrls();
+  const path = pathWithQuery.startsWith("/")
+    ? pathWithQuery
+    : `/${pathWithQuery}`;
 
+  // ✅ FIX: Always read fresh from localStorage at call time
+  const userId = localStorage.getItem("member_user_id") || "";
+
+  // ✅ FIX: Auto-inject X-Auth-Member — caller headers override if needed
+  const mergedHeaders = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    ...(userId ? { "X-Auth-Member": userId } : {}), // 🔥 auto-inject
+    ...(options.headers || {}),                      // 🔥 caller can still override
+  };
+
+  // Rebuild options with merged headers (don't mutate original)
+  const mergedOptions = {
+    ...options,
+    headers: mergedHeaders,
+  };
+
+  const fallbackBaseUrls = getFallbackBaseUrls();
   const orderedBaseUrls = activeApiBase
-    ? [activeApiBase, ...fallbackBaseUrls.filter((base) => base !== activeApiBase)]
+    ? [activeApiBase, ...fallbackBaseUrls.filter((b) => b !== activeApiBase)]
     : fallbackBaseUrls;
 
   let networkError = null;
@@ -30,9 +50,11 @@ export async function requestMemberApi(pathWithQuery, options = {}) {
 
   for (const baseUrl of orderedBaseUrls) {
     try {
-      const response = await fetch(`${baseUrl}${path}`, options);
+      const response = await fetch(`${baseUrl}${path}`, mergedOptions); // ✅ use mergedOptions
       const bodyText = await response.text();
-      const contentType = (response.headers.get("content-type") || "").toLowerCase();
+      const contentType = (
+        response.headers.get("content-type") || ""
+      ).toLowerCase();
 
       let data = {};
       if (bodyText) {
@@ -45,41 +67,27 @@ export async function requestMemberApi(pathWithQuery, options = {}) {
 
       const isLikelyJsonApi =
         contentType.includes("application/json") ||
-        (data && typeof data === "object" && ("message" in data || "data" in data || "errors" in data));
+        (data &&
+          typeof data === "object" &&
+          ("message" in data || "data" in data || "errors" in data));
 
       if (response.ok) {
         activeApiBase = baseUrl;
-
-        return {
-          ok: true,
-          status: response.status,
-          data,
-        };
+        return { ok: true, status: response.status, data };
       }
 
       if (isLikelyJsonApi && response.status !== 404) {
         activeApiBase = baseUrl;
-
-        return {
-          ok: false,
-          status: response.status,
-          data,
-        };
+        return { ok: false, status: response.status, data };
       }
 
-      lastApiErrorResponse = {
-        ok: false,
-        status: response.status,
-        data,
-      };
+      lastApiErrorResponse = { ok: false, status: response.status, data };
     } catch (error) {
       networkError = error;
     }
   }
 
-  if (lastApiErrorResponse) {
-    return lastApiErrorResponse;
-  }
+  if (lastApiErrorResponse) return lastApiErrorResponse;
 
   throw networkError || new Error("Unable to connect to backend.");
 }

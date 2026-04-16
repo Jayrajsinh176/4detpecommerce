@@ -145,7 +145,14 @@ function Footer() {
                     <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
                     <span>Products</span>
                   </Link>
-                   <Link
+                  <Link
+                    to="/opportunity"
+                    className="relative flex items-center gap-2 hover:text-white group/link"
+                  >
+                    <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
+                    <span>Opportunity</span>
+                  </Link>
+                  <Link
                     to="/gallery"
                     className="relative flex items-center gap-2 hover:text-white group/link"
                   >
@@ -187,13 +194,21 @@ function Footer() {
                   Resources
                 </h4>
                 <nav className="flex flex-col space-y-3 text-sm sm:text-base">
-                  
+
                   <Link
                     to="/mediaroom"
                     className="relative flex items-center gap-2 hover:text-white cursor-pointer group/link"
                   >
                     <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
                     <span>Media Room</span>
+                  </Link>
+
+                  <Link
+                    to="/legaldocument"
+                    className="relative flex items-center gap-2 hover:text-white cursor-pointer group/link"
+                  >
+                    <FaChevronRight className="text-[#bb402a] text-xs group-hover/link:translate-x-1" />
+                    <span>Certificates</span>
                   </Link>
                   <Link
                     to="/compliancepolicy"
